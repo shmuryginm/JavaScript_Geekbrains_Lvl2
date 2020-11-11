@@ -4,7 +4,7 @@ const http = require("http")
 //Импортируем модуль для работы с файловой системой
 const fs = require("fs")
 
-const HTTP_PORT_NUMBER = 3000
+//const HTTP_PORT_NUMBER = 3000
 
 //Создадим веб-сервер
 const server = http.createServer((req, res) => {
@@ -58,7 +58,7 @@ const server = http.createServer((req, res) => {
 
 
 //Устанавливаем порт для нашего веб-сервера
-const port = process.env.HTTP_PORT || HTTP_PORT_NUMBER
+const port = process.env.PORT || 3000
 
 //Указываем веб-серверу, через какой порт следует ждать запросы и направлять ответы
 server.listen(port)
