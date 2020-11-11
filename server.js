@@ -33,7 +33,7 @@ const server = http.createServer((req, res) => {
 
     //Определим имя файла, который следует прочитать
     //URL представляет корневой каталог?
-    var filename = (url === "/")
+    const filename = (url === "/")
         ? PUBLIC_PATH + ROOT_FILE
         : PUBLIC_PATH + url
 
@@ -42,7 +42,7 @@ const server = http.createServer((req, res) => {
         var body = fs.readFileSync(filename)
     }
     catch (ex) {
-        //Error NO ENTry (Error NO ENTity)
+        //ENOENT == Error NO ENTry (Error NO ENTity)
         //https://stackoverflow.com/questions/19902828/why-does-enoent-mean-no-such-file-or-directory
         if (ex.code === 'ENOENT') {
             console.log(`Файл ${url} не найден!`)
