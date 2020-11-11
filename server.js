@@ -1,8 +1,8 @@
 //Импортируем модуль для работы с протоколом HTTP
-const http = require('http')
+const http = require("http")
 
 //Импортируем модуль для работы с файловой системой
-const fs = require('fs')
+const fs = require("fs")
 
 const HTTP_PORT = 3000
 
