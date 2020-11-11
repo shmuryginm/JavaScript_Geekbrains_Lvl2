@@ -4,6 +4,7 @@ const http = require("http")
 //Импортируем модуль для работы с файловой системой
 const fs = require("fs")
 
+//Задаим по умолчанию номер порта для работы с браузером
 const DEFAULT_HTTP_PORT_NUMBER = 3000
 
 //Создадим веб-сервер
@@ -32,7 +33,7 @@ const server = http.createServer((req, res) => {
     }
 
     //Определим имя файла, который следует прочитать
-    //URL представляет корневой каталог?
+    //URL является корневым каталогом?
     const filename = (url === "/")
         ? PUBLIC_PATH + ROOT_FILE
         : PUBLIC_PATH + url
@@ -57,10 +58,12 @@ const server = http.createServer((req, res) => {
 });
 
 
-//Устанавливаем порт для нашего веб-сервера
+//Устанавливаем номер порта для нашего веб-сервера
+//Либо из переменной среды "PORT",
+//а если она не задана, то номер порта будет равен DEFAULT_HTTP_PORT_NUMBER
 const port = process.env.PORT || DEFAULT_HTTP_PORT_NUMBER
 
-//Указываем веб-серверу, через какой порт следует ждать запросы и направлять ответы
+//Указываем веб-серверу, через какой порт работать с браузером
 server.listen(port)
 
 console.log(`Server started on port ${port} !`)
