@@ -1,8 +1,14 @@
+header {
+    background: #438f00;
+    color: #fff;
+    font-weight: bold;
+}
+
 body {
     margin:0;
     padding:0;
     font-family:Courier, Courier New, Andele Mono;
-    font-size:120%;
+    font-size:100%;
 }
 p {
     margin:0px;
@@ -31,7 +37,8 @@ img.top{
     vertical-align:top;
 }
 .header {
-    background-color:#ffffff;
+    background-color:#fff;
+    color:#000;
     padding:15px;
     line-height:0;
 }
