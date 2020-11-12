@@ -4,19 +4,18 @@ const http = require("http")
 //Импортируем модуль для работы с файловой системой
 const fs = require("fs")
 
-//Задаим по умолчанию номер порта для работы с браузером
+//Зададим по умолчанию номер порта для работы с браузером
 const DEFAULT_HTTP_PORT_NUMBER = 3000
 
 //Создадим веб-сервер
 const server = http.createServer((req, res) => {
-
     const PUBLIC_PATH = "./public"
     const ROOT_FILE = "/index.html"
     const FAVORITE_ICON_FILE_NAME = "/favicon.ico"
     
     //Получим URL из запроса.
     //Этот файл следует прочитать и отдать браузеру
-    var url = req.url;
+    const url = req.url;
 
     console.log(url);
 
@@ -38,23 +37,25 @@ const server = http.createServer((req, res) => {
         ? PUBLIC_PATH + ROOT_FILE
         : PUBLIC_PATH + url
 
+    let body
+
     //Читаем содержимое файла
     try {
-        var body = fs.readFileSync(filename)
+        body = fs.readFileSync(filename)
     }
     catch (ex) {
         //ENOENT == Error NO ENTry (Error NO ENTity)
         //https://stackoverflow.com/questions/19902828/why-does-enoent-mean-no-such-file-or-directory
         if (ex.code === 'ENOENT') {
-            console.log(`Файл ${url} не найден!`)
+            console.log(`Ошибка! Файл ${url} не найден!`)
         } else {
-            throw ex
+            // TODO Ревлизовать передачу браузеру кода состояния HTTP
+            console.log(`Ошибка! ${ex.name} ${ex.message}!`)
         }
     }
 
     //Отправляем содержимое прочитанного файла браузеру
     res.end(body)
-
 });
 
 
