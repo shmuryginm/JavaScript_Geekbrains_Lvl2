@@ -64,7 +64,7 @@ class InetShopProduct extends Product {
 
 
 /***
- * Класс представляет собой товар в корзине пользователя
+ * Класс представляет товар в корзине пользователя
  */
 class BasketProduct extends InetShopProduct {
     /**
@@ -123,7 +123,7 @@ class ProductsList {
      * 
      * @param {number} {id} - Идентификатор товара
      * 
-     * @returns {number} - Индекс в массиве товаров по ИД товара
+     * @returns {number} - Индекс в массиве товаров по ИД товара. -1 - если массив пустой
     */
     getIndexFromID(id) {
         if (this.Items.length == 0) {
@@ -230,7 +230,6 @@ class BasketProductsList extends ProductsList {
         return this._inetShopProductsList
     }
 
-
     /**
      * Метод добавляет товар в список товаров корзины
      * 
@@ -271,11 +270,18 @@ class BasketProductsList extends ProductsList {
     }
 
 
-    // TODO Реализовать увеличение/уменьшение кол-ва существующего товара
-    changeProductCount(id) {
+    // TODO Реализовать увеличение/уменьшение кол-ва существующего в корзине товара
 
+    // TODO Реализовать удаление товара
+
+    // TODO Реализовать удаление всех товаров
+
+    changeProductCount(id, operationCode) {
+        /*
+        addProduct(id)
+        deleteProduct(id)
+        */
     }
-
 
     /**
      * Метод отображает перечень товаров в корзине */
@@ -285,12 +291,56 @@ class BasketProductsList extends ProductsList {
 } 
 
 
+// TODO Реализовать класс, представляющий корзину интернет магазина
+
+
 /**
  * Класс представляет корзину интернет магазина
  */
 class Basket {
-    // TODO Реализовать класс, представляющий корзину интернет магазина
+    /**
+     * Количество товаров в корзине */
+    _countTotal = 0
 
+    /**
+     * Итоговая стоимость товаров в корзине */
+    _sumTotal = 0
+
+    /**
+     * @constructor
+     * 
+     * @param {object} {basketProductsList} - Список товаров в корзине
+     */
+    constructor(basketProductsList) {
+        _basketroductsList = null
+
+        this._basketProductsList = basketProductsList
+    }
+
+    /**
+      * Все свойства класса предназначены только для чтения */
+    get BasketProductsList() {
+        return this._basketProductsList
+    }
+
+    get CountTotal() {
+        return this._countTotal
+    }
+
+    get SumTotal() {
+        return this._sumTotal
+    }
+
+    /**
+     * Метод рассчитывает количество и общую стоимость товаров в корзине */
+    calculate() {
+
+    }
+    
+    /**
+     * Метод отображает содержимое корзины, 
+     * итоговоое количество товаров в корзине и их общую стоимость  
+    */
     render() {
 
     }
@@ -320,6 +370,14 @@ function main () {
     console.log(`Ко-во товаров интернет магазина: ${interShopProductsList.Items.length}`)
 
     let index = interShopProductsList.getIndexFromID(PRODUCT_ID)
+
+    //Список пустой?
+    if (index == -1) {
+        console.log(`Индекс для товара с ИД == ${PRODUCT_ID} не найден!`)
+
+        return
+    }
+
     console.log(`Индекс товара с ИД == ${PRODUCT_ID}: ${index}`)
     
     console.log(BREAK_LINE)
