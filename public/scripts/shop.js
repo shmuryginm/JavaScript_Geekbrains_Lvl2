@@ -3,13 +3,32 @@
  */
 
  /**
-  * Класс представляет товар в интернет магазине
+  * Класс представляет абстрактный товар
   */
-class InetShopProduct {
+ class Product {
     /**
      * Идентификатор товара */
-     _id
+    _id
 
+    /**
+      * @constructor
+      * 
+      * @param {number} {id} - Идентификатор товара
+    */
+     constructor(id) {
+        this._id = id
+     }
+
+     get ID() {
+        return this._id
+     }
+}
+
+
+ /**
+  * Класс представляет товар в интернет магазине
+  */
+class InetShopProduct extends Product {
      /**
       * Наименование товара */
      _name
@@ -26,17 +45,14 @@ class InetShopProduct {
       * @param {number} {price} - Цена товарв
       */
      constructor(id, name, price) {
-        this._id = id
+        super(id)
+
         this._name = name
         this._price = price
      }
 
      /**
       * Все свойства класса предназначены только для чтения */
-     get ID() {
-        return this._id
-     }
-
      get Name() {
          return this._name
      }
@@ -50,7 +66,7 @@ class InetShopProduct {
 /***
  * Класс представляет собой товар в корзине пользователя
  */
-class BacketProduct extends InetShopProduct {
+class BasketProduct extends InetShopProduct {
     /**
      * Количество товара в корзине */
     _count = 0
@@ -82,11 +98,10 @@ class BacketProduct extends InetShopProduct {
      * Метод уменьшает кол-во товара в корзине на единицу (если кол-во > 0)
      */
     decCount() {
-        if (this.count > 0) {
+        if (this._count > 0) {
             this._count--
         }
     }
-
 }
 
 
@@ -95,7 +110,7 @@ class BacketProduct extends InetShopProduct {
  */
 class ProductsList {
     /**
-     * Список товаров */
+     * Массив свойств товаров */
     Items = []
 
     /**
@@ -104,7 +119,30 @@ class ProductsList {
     constructor() { }
 
     /**
-     * Метод отображает список товаров */
+     * Метод возвращает индекс в массиве товаров по ИД товара
+     * 
+     * @param {number} {id} - Идентификатор товара
+     * 
+     * @returns {number} - Индекс в массиве товаров по ИД товара
+    */
+    getIndexFromID(id) {
+        if (this.Items.length == 0) {
+            return -1
+        }
+
+        let i = 0
+
+        while (i < this.Items.length) {
+            if (this.Items[i].ID == id) {
+                return i
+            }
+
+            i++
+        }
+    }
+
+    /**
+     * Метод отображает товары */
     render() { }
 }
 
@@ -159,20 +197,9 @@ class InetShopProductsList extends ProductsList {
     }
 
     /**
-     * Метод возвращает индекс в массиве товаров по ИД товара
-     * 
-     * @param {number} {id} - Идентификатор товара
-    */
-    getIndexFromID(id) {
-
-        // TODO реализовать перебор массива объектов
-
-    }
-
-    /**
      * Метод отображает перечень товаров интернет магазина */
     render() {
-        console.log(this.Items)
+        console.log(...this.Items)
     }
 }
 
@@ -182,10 +209,14 @@ class InetShopProductsList extends ProductsList {
  */
 class BasketProductsList extends ProductsList {
 
+    /**
+     * Список товаров в интернет магазине */
     _inetShopProductsList
 
     /**
      * @constructor
+     * 
+     * @param {object} {inetShopProductsList} - Список товаров в интернет магазине
      */
     constructor(inetShopProductsList) {
         super()
@@ -194,28 +225,127 @@ class BasketProductsList extends ProductsList {
     }
 
     /**
-     * Метод добавляет товар с ИД id в список товаров корзины
-     */
-    add(id) {
-        // TODO Добавление элемента в массив
-        //this.Items.push()
+     * Список товаров интернет магазина изменять нельзя */
+    get InetShopProductsList() {
+        return this._inetShopProductsList
     }
 
+
+    /**
+     * Метод добавляет товар в список товаров корзины
+     * 
+     * @param {number} {id} - ИД товара 
+     * 
+     * @returns {number} - 
+     */
+    addProduct(id) {
+        //Получим индекс в массиве объектов с заданным ИД
+        const index = this._inetShopProductsList.getIndexFromID(id)
+
+        const element = new BasketProduct(
+            this._inetShopProductsList.Items[index].ID, 
+            this._inetShopProductsList.Items[index].Name,
+            this._inetShopProductsList.Items[index].Price)
+
+        element.incCount()
+
+        this.Items.push(element)
+
+        return this.Items.length - 1
+    }
+
+    /**
+     * Метод удаляет товар из списка товаров корзины
+     * 
+     * @param {number} {id} - ИД товара 
+    */
+    deleteProduct(id) {
+        //Получим индекс в массиве объектов с заданным ИД
+        const index = super.getIndexFromID(id)
+
+        if (index == -1) {
+            return
+        }
+
+        this.Items.splice(index, 1)
+    }
+
+
+    // TODO Реализовать увеличение/уменьшение кол-ва существующего товара
+    changeProductCount(id) {
+
+    }
+
+
+    /**
+     * Метод отображает перечень товаров в корзине */
+    render() {
+        console.log(...this.Items)
+    }
 } 
+
+
+/**
+ * Класс представляет корзину интернет магазина
+ */
+class Basket {
+    // TODO Реализовать класс, представляющий корзину интернет магазина
+
+    render() {
+
+    }
+}
 
 
 /**
  * Основной модуль
  */
 function main () {
+    const BREAK_LINE = "--------------------------------------------------------------"
+    const PRODUCT_ID = 100
+
+    console.log(BREAK_LINE)
+
     //Создадим объект для хранения списка товаров интернет магазина
-    interShopProductList = new InetShopProductsList()
+    interShopProductsList = new InetShopProductsList()
 
     //Получим список товаров интернет магазина
-    interShopProductList.getProductsList()
+    interShopProductsList.getProductsList()
+
+    console.log("Список товаров интернет магазина")
 
     //Выведем список товаров интернет магазина
-    interShopProductList.render()
+    interShopProductsList.render()
+
+    console.log(`Ко-во товаров интернет магазина: ${interShopProductsList.Items.length}`)
+
+    let index = interShopProductsList.getIndexFromID(PRODUCT_ID)
+    console.log(`Индекс товара с ИД == ${PRODUCT_ID}: ${index}`)
+    
+    console.log(BREAK_LINE)
+
+    console.log("Корзина")
+
+    //Создадим объект для списка товаров в корзине
+    basketProductsList = new BasketProductsList(interShopProductsList)
+    
+    console.log(`Добавим в корзину товар с ИД == ${PRODUCT_ID}`)
+    index = basketProductsList.addProduct(PRODUCT_ID)
+    basketProductsList.render()
+
+    console.log("Увеличим кол-во товара в корзине на единицу")
+    basketProductsList.Items[index].incCount()
+    basketProductsList.render()
+
+    console.log("И затем одну единицу товара удалим из корзины")
+    basketProductsList.Items[index].decCount()
+    basketProductsList.render()
+
+    //console.log(basketProductsList.getIndexFromID(PRODUCT_ID))
+
+    console.log(`Удалим товар ID == ${PRODUCT_ID} из корзины целиком`)
+    basketProductsList.deleteProduct(PRODUCT_ID)
+    console.log(`Кол-во товаров в корзине - ${basketProductsList.Items.length}`)
 }
 
 
