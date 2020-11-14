@@ -468,6 +468,29 @@ class BtnAbstractInetShopProductListPlus {
 
 
 /**
+ * Класс реализует кнопку "Удалить все товары из корзины"
+ */
+class BtnAbstractDeleteAllProducts {
+
+    _basketProductsList
+
+    constructor(basketProductsList) {
+        this._basketProductsList = basketProductsList
+    }
+
+    get BasketProductsList() {
+        return this._basketProductsList
+    }
+
+    /**
+     * Метод имитирует нажатие кнопки "Удалить все товары из корзины" */
+    click() {
+        this._basketProductsList.deleteAllProducts()
+    }
+}
+
+
+/**
  * Основной модуль
  * 
 */
@@ -540,19 +563,27 @@ class Program {
             basketProductsList.render()
             basket.render()
 
-        console.log("И затем одну единицу товара удалим из корзины")
-        //basketProductsList.Items[index].decCount()
-        basketProductsList.deleteProductElement(PRODUCT_ID)
-        basketProductsList.render()
-        basket.render()
+            console.log("И затем одну единицу товара удалим из корзины")
+            //basketProductsList.Items[index].decCount()
+            basketProductsList.deleteProductElement(PRODUCT_ID)
+            basketProductsList.render()
+            basket.render()
 
-        //console.log(basketProductsList.getIndexFromID(PRODUCT_ID))
+            //console.log(basketProductsList.getIndexFromID(PRODUCT_ID))
+            */
 
-        console.log(`Удалим товар ID == ${PRODUCT_ID} (${basketProductsList.Items[index].Name}) из корзины целиком`)
-        basketProductsList.deleteAllProducts(PRODUCT_ID)
-        //console.log(`Кол-во товаров в корзине - ${basketProductsList.Items.length}`)
-        basket.render()
-        */
+            console.log("Удалим все товары из корзины")
+            //Создадим кнопку для добавления товара в корзину
+            const btnDeleteAllProducts = new BtnAbstractDeleteAllProducts(basketProductsList, basket)
+            btnDeleteAllProducts.click()
+            
+            /*
+            console.log(`Удалим товар ID == ${PRODUCT_ID} (${basketProductsList.Items[index].Name}) из корзины целиком`)
+            basketProductsList.deleteAllProducts(PRODUCT_ID)
+            */
+           
+            console.log(`Кол-во товаров в корзине - ${basketProductsList.Items.length}`)
+            basket.render()
         }
         catch (ex) {
             console.log(`${ex.name} - ${ex.message}!`)
