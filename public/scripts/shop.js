@@ -383,6 +383,91 @@ class Basket {
 
 
 /**
+ * Класс реализует кнопку "Добавить товар в корзину"
+ */
+class BtnAbstractInetShopProductListPlus {
+    
+    /**
+     * ИД товара */
+    _productID
+
+    /**
+     * Список товаров в интренет магазине */
+    _inetShopProductsList
+
+    /**
+     * Список товаров в корзине */
+    _basketProductsList
+
+    /**
+     * Корзина пользователя */
+    _basket
+
+    /**
+     * Индекс товара */
+    _index
+    
+    /**
+     * @constructor
+     * 
+     * @param productID            {number} - ИД товара
+     * @param inetShopProductsList {object} - Список товаров интернет магазина
+     * @param basketProductsList   {object} - Список товаров в корзине пользователя
+     * @param basket               {object} - Корзина пользователя
+     * 
+     */
+    constructor(productID, inetShopProductsList, basketProductsList, basket) {
+        this._productID = productID
+        this._inetShopProductsList = inetShopProductsList
+        this._basketProductsList = basketProductsList
+        this._basket = basket
+
+        //Получим индекс товара в перечне товаров интернет магазина
+        this._index = this._inetShopProductsList.getIndexFromID(this._productID)
+    }
+
+    /**
+     * Идентификатор товара */
+    get ProductID() {
+        return this._productID
+    }
+
+    /**
+     * Список товаров в интернет магазине */
+    get InetShopProductsList() {
+        return this._interShopProductsList
+    }
+
+    /**
+     * Список товаров в корзине пользователя */
+    get BasketProductsList() {
+        return this._basketProductsList
+    }
+
+    /**
+     * Корзина */
+    get Basket() {
+        return this._basket
+    }
+
+    /**
+     * Индекс товара в списке товаров интеренет магазина*/
+    get Index() {
+        return this._index
+    }
+
+    /**
+     * Метод имитирует нажатие кнопки "Добавить товар в корзину" */
+    click() {
+        this._basketProductsList.addProduct(this._productID)
+
+        this._basketProductsList.render()
+        this._basket.render()
+    }
+}
+
+
+/**
  * Основной модуль
  * 
 */
@@ -397,59 +482,63 @@ class Program {
 
         console.log(BREAK_LINE)
 
-        //Создадим объект для хранения списка товаров интернет магазина
-        const interShopProductsList = new InetShopProductsList()
+        try{
+            //Создадим объект для хранения списка товаров интернет магазина
+            const interShopProductsList = new InetShopProductsList()
 
-        //Получим список товаров интернет магазина
-        interShopProductsList.getProductsList()
+            //Получим список товаров интернет магазина
+            interShopProductsList.getProductsList()
 
-        console.log("Список товаров интернет магазина")
+            console.log("Список товаров интернет магазина")
+            interShopProductsList.render()
 
-        //Выведем список товаров интернет магазина
-        interShopProductsList.render()
+            console.log(`Ко-во товаров интернет магазина: ${interShopProductsList.Items.length}`)
 
-        console.log(`Ко-во товаров интернет магазина: ${interShopProductsList.Items.length}`)
+            console.log()
+            
+            //Получим индекс товара из списка товаров интернет магазина
+            let index = interShopProductsList.getIndexFromID(PRODUCT_ID)
 
-        let index = interShopProductsList.getIndexFromID(PRODUCT_ID)
-
-        //Список пустой?
-        if (index == -1) {
-            console.log(`Индекс для товара с ИД == ${PRODUCT_ID} в списке товаров не найден!`)
-
-            return
-        }
-
-        console.log(`Индекс товара с ИД == ${PRODUCT_ID}: ${index}`)
+            //Список пустой?
+            if (index == -1) {
+                console.log(`Индекс для товара с ИД == ${PRODUCT_ID} в списке товаров не найден!`)
     
-        console.log(BREAK_LINE)
+                return
+            }
 
-        console.log("Корзина")
+            console.log(`Добавим в корзину товар с ИД == ${PRODUCT_ID} [${interShopProductsList.Items[index].Name}), цена: ${interShopProductsList.Items[index].Price}]`)
+            console.log("Имитируем нажатие кнопки \Добавить товар в корзину\"")
 
-        //Создадим объект для списка товаров в корзине
-        let basketProductsList = new BasketProductsList(interShopProductsList)
+            console.log(BREAK_LINE)
 
-        console.log(`Добавим в корзину товар с ИД == ${PRODUCT_ID} (${interShopProductsList.Items[index].Name})`)
-        index = basketProductsList.addProduct(PRODUCT_ID)
+            console.log("Корзина")
 
-        basketProductsList.render()
+            //Создадим объект для списка товаров в корзине
+            const basketProductsList = new BasketProductsList(interShopProductsList)
 
-        //Создадим объект коризины товаров
-        const basket = new Basket(basketProductsList)
-        basket.render()
+            //Создадим объект корзины товаров
+            const basket = new Basket(basketProductsList)
 
-        console.log("Увеличим кол-во товара в корзине на единицу")
-        //basketProductsList.Items[index].incCount()
+            //Создадим кнопку для добавления товара в корзину
+            const btnInetShopProductListPlus = new BtnAbstractInetShopProductListPlus
+                (
+                    PRODUCT_ID, interShopProductsList, basketProductsList, basket
+                )
 
-        //Просто ещё раз вызовем метод добавления товара, он сам разберётся что делать
-        index = basketProductsList.addProduct(PRODUCT_ID)
-        basketProductsList.render()
-        basket.render();
+            //Имитируем нажатие на кнопку
+            btnInetShopProductListPlus.click()
 
-        console.log("Увеличим кол-во товара в корзине на единицу ещё раз")
-        console.log("Теперь в корзине должно быть 3 экземпляра товара")
-        index = basketProductsList.addProduct(PRODUCT_ID)
-        basketProductsList.render()
-        basket.render()
+            console.log("Увеличим кол-во товара в корзине на единицу (нажмём кнопку)")
+            btnInetShopProductListPlus.click()
+                        
+            console.log("Увеличим кол-во товара в корзине на единицу ещё раз (ещё раз нажмём кнопку)")
+            console.log("Теперь в корзине должно быть 3 экземпляра товара")
+            btnInetShopProductListPlus.click()
+
+            /*
+            index = basketProductsList.addProduct(PRODUCT_ID)
+            basketProductsList.render()
+            basket.render()
 
         console.log("И затем одну единицу товара удалим из корзины")
         //basketProductsList.Items[index].decCount()
@@ -463,6 +552,12 @@ class Program {
         basketProductsList.deleteAllProducts(PRODUCT_ID)
         //console.log(`Кол-во товаров в корзине - ${basketProductsList.Items.length}`)
         basket.render()
+        */
+        }
+        catch (ex) {
+            console.log(`${ex.name} - ${ex.message}!`)
+        }
+
     }
 }
 
