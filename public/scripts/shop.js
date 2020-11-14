@@ -316,9 +316,6 @@ class BasketProductsList extends ProductsList {
 } 
 
 
-// TODO Реализовать класс, представляющий корзину интернет магазина
-
-
 /**
  * Класс представляет корзину интернет магазина
 */
@@ -359,14 +356,28 @@ class Basket {
      * Метод рассчитывает количество и общую стоимость товаров в корзине */
     _calculate() {
 
+        this._countTotal = 0
+        this._sumTotal = 0
+
+        //Корзина пустая?
+        if (this._basketProductsList.Items.length == 0) {
+            return
+        }
+
+        for (let i = 0; i < this._basketProductsList.Items.length; i++) {
+            this._countTotal = this._basketProductsList.Items[i].Count 
+            this._sumTotal += this._basketProductsList.Items[i].Price * this._basketProductsList.Items[i].Count
+        }
     }
     
     /**
-     * Метод отображает содержимое корзины, 
-     * итоговоое количество товаров в корзине и их общую стоимость  
+     * Метод отображает итоговоое количество товаров в корзине и их общую стоимость  
     */
     render() {
+    
+        this._calculate()
 
+        console.log(`Количество товаров: ${this.CountTotal} на сумму: ${this.SumTotal}`)
     }
 }
 
@@ -419,15 +430,12 @@ class Program {
 
         console.log(`Добавим в корзину товар с ИД == ${PRODUCT_ID} (${interShopProductsList.Items[index].Name})`)
         index = basketProductsList.addProduct(PRODUCT_ID)
-        
-        //Список пустой?
-        if (index == -1) {
-            console.log(`Индекс для товара с ИД == ${PRODUCT_ID} в корзине не найден!`)
-
-            return
-        }
 
         basketProductsList.render()
+
+        //Создадим объект коризины товаров
+        const basket = new Basket(basketProductsList)
+        basket.render()
 
         console.log("Увеличим кол-во товара в корзине на единицу")
         //basketProductsList.Items[index].incCount()
@@ -435,23 +443,26 @@ class Program {
         //Просто ещё раз вызовем метод добавления товара, он сам разберётся что делать
         index = basketProductsList.addProduct(PRODUCT_ID)
         basketProductsList.render()
+        basket.render();
 
         console.log("Увеличим кол-во товара в корзине на единицу ещё раз")
         console.log("Теперь в корзине должно быть 3 экземпляра товара")
         index = basketProductsList.addProduct(PRODUCT_ID)
         basketProductsList.render()
+        basket.render()
 
         console.log("И затем одну единицу товара удалим из корзины")
         //basketProductsList.Items[index].decCount()
-        //Удалим элемент товара из корзины
         basketProductsList.deleteProductElement(PRODUCT_ID)
         basketProductsList.render()
+        basket.render()
 
         //console.log(basketProductsList.getIndexFromID(PRODUCT_ID))
 
         console.log(`Удалим товар ID == ${PRODUCT_ID} (${basketProductsList.Items[index].Name}) из корзины целиком`)
         basketProductsList.deleteAllProducts(PRODUCT_ID)
-        console.log(`Кол-во товаров в корзине - ${basketProductsList.Items.length}`)
+        //console.log(`Кол-во товаров в корзине - ${basketProductsList.Items.length}`)
+        basket.render()
     }
 }
 
