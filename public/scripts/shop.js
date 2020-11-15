@@ -114,6 +114,7 @@ class ProductsList {
      * @returns {number} - Индекс в массиве товаров по ИД товара. -1 - если массив пустой
     */
     getIndexFromID(id) {
+        //Товаров нет?
         if (this.Items.length == 0) {
             return -1
         }
@@ -127,6 +128,9 @@ class ProductsList {
 
             i++
         }
+
+        //Товар не найден по ИД
+        return -1
     }
 
     /**
@@ -203,6 +207,8 @@ class InetShopProductsList extends ProductsList {
     }
 
 
+    /**
+     * Метод создаёт HTML-источник для вывода на веб-страницу */
     _createProductsList() {
         let s = ""
 
@@ -221,12 +227,17 @@ class InetShopProductsList extends ProductsList {
     /**
      * Метод отображает перечень товаров интернет магазина */
     render() {
+        //Найдём в документе место для размещения списка товаров интернет магазина
         let placeToRender = document.querySelector("." + this._querySelectorName)
 
+        //Место для вывода оьбнаружено?
         if (placeToRender != null) {
+            //Создадим HTML-элемент для вывода списка товаров
             const productList = document.createElement("text")
+
             productList.classList.add("Products")
 
+            //Получим HTML-источник для вывода на веб-страницу
             let s = this._createProductsList()
 
             productList.innerHTML = s
@@ -276,6 +287,8 @@ class BasketProductsList extends ProductsList {
     addProduct(id) {
         //Получим индекс с заданным ИД в массиве товаров корзины
         let index = this.getIndexFromID(id)
+
+        console.log(id, index)
 
         //Товар в корзину уже был добавлен?
         if (index != -1) {
@@ -411,7 +424,7 @@ class Basket {
         }
 
         for (let i = 0; i < this._basketProductsList.Items.length; i++) {
-            this._countTotal = this._basketProductsList.Items[i].Count 
+            this._countTotal += this._basketProductsList.Items[i].Count 
             this._sumTotal += this._basketProductsList.Items[i].Price * this._basketProductsList.Items[i].Count
         }
     }
@@ -542,7 +555,7 @@ class BtnAddProductInBasketEmulator extends BtnBasketAbstractEmulator {
     /**
      * Метод имитирует нажатие кнопки "Добавить товар в корзину" */
     click() {
-        super.BasketProductsList.addProduct(this._productID)
+        this.BasketProductsList.addProduct(this._productID)
 
         super.click()
     }
@@ -673,15 +686,52 @@ class BtnDeleteProductEmulator extends BtnBasketAbstractEmulator {
 class Program {
 
     /**
-     * 
+     * Имя HTML-селектора для вывода списка товаров */
+    static _btnInetShopProductsName = "btnProductList"
+
+    /**
+     * Список товаров интернет магазина */
+    static interShopProductsList
+
+    /**
+     * Список товаров в корзине */
+    static basketProductsList
+
+    /**
+     * Корзина */
+    static basket
+
+
+    /**
      * @param name - Наименование элемента упраления вида [A-z]_[0-9]
      * 
-     * @returns - Код из наименования элемена управления
+     * @returns - Число из наименования элемена управления
      */
     static _getProductIdFromName(name) {
         let arr = name.split("_")
 
         return (arr.length > 0) ? arr[1] : ""
+    }
+
+
+    /**
+     * Метод добавляет товар в корзину, в зависимости от того, какая была нажата кнопка
+     * 
+     * @param btnName {string} - Имя кнопки, которую нажали
+     */
+    static OnBtnAddToBasketClick(btnName) {
+
+        //Получим код товара
+        let productID = this._getProductIdFromName(btnName)
+
+        //Создадим объект для добавления товара в корзину
+        let btnAddProductInBasket = new BtnAddProductInBasketEmulator
+        (
+            productID, this.interShopProductsList, this.basketProductsList, this.basket
+        )
+
+        //Добавим товар в корзину
+        btnAddProductInBasket.click();
     }
 
 
@@ -692,39 +742,33 @@ class Program {
 
         try {
             //Создадим объект для хранения списка товаров интернет магазина
-            const interShopProductsList = new InetShopProductsList("productsList")
+            this.interShopProductsList = new InetShopProductsList("productsList")
 
             //Получим список товаров интернет магазина
-            interShopProductsList.getProductsList()
+            this.interShopProductsList.getProductsList()
 
             //Создадим объект для списка товаров в корзине
-            const basketProductsList = new BasketProductsList(interShopProductsList)
+            this.basketProductsList = new BasketProductsList(this.interShopProductsList)
 
             //Создадим объект корзины товаров
-            const basket = new Basket(basketProductsList)
+            this.basket = new Basket(this.basketProductsList)
 
-            interShopProductsList.render()
-
-
-            // TO DO Прикрепить к событию onclick каждой кнопки соответствующий метод
+            this.interShopProductsList.render()
 
 
             console.log("Корзина")
-            //Создадим кнопку для добавления товара в корзину
-            let btnAddProductInBasket = new BtnAddProductInBasketEmulator
-                (
-                    10, interShopProductsList, basketProductsList, basket
-                )
-             
-            let btn = document.getElementsByName("btnProductList_10")[0]
 
-            if (btn != null) {
-                btn.addEventListener("click", () => {
-                    btnAddProductInBasket.click()
-                })
+            
+            for(let i = 0; i < this.interShopProductsList.Items.length; i++) {
+                //Получаем ИД товара
+                let productID = this.interShopProductsList.Items[i].ID    
+
+                let btn = document.getElementsByName(this._btnInetShopProductsName + "_" + productID)[0]
+
+                if (btn != null) {
+                    btn.addEventListener("click", () => {this.OnBtnAddToBasketClick(btn.name)})
+                }
             }
-            basketProductsList.render()
-            basket.render()
         }
         catch (ex) {
             console.log(`${ex.name} - ${ex.message}!`)
@@ -733,6 +777,9 @@ class Program {
     }
 
 
+    /**
+     * Метод для эмуляции работы интернет-магазина
+     */
     static test() {
         const BREAK_LINE = "--------------------------------------------------------------"
         let PRODUCT_ID = 100
