@@ -2,7 +2,6 @@
  * Файл представляет набор классов для описания работы интернет магазина
 */
 
-
 /**
  * Класс представляет товар в интернет магазине
 */
@@ -383,18 +382,10 @@ class Basket {
 
 
 /**
- * Класс имитирует кнопку "Добавить товар в корзину"
+ * Класс представляет собой абстрактную кнопку, реализующую работу с корзиной
  */
-class BtnAbstractInetShopProductListPlus {
+class BtnBasketAbstractEmulator {
     
-    /**
-     * ИД товара */
-    _productID
-
-    /**
-     * Список товаров в интренет магазине */
-    _inetShopProductsList
-
     /**
      * Список товаров в корзине */
     _basketProductsList
@@ -402,6 +393,58 @@ class BtnAbstractInetShopProductListPlus {
     /**
      * Корзина пользователя */
     _basket
+    
+    /**
+     * @constructor
+     * 
+     * @param basketProductsList   {object} - Список товаров в корзине пользователя
+     * @param basket               {object} - Корзина пользователя
+     * 
+     */
+    constructor(basketProductsList, basket) {
+        this._basketProductsList = basketProductsList
+        this._basket = basket
+    }
+
+    /**
+     * Список товаров в корзине пользователя */
+    get BasketProductsList() {
+        return this._basketProductsList
+    }
+
+    /**
+     * Корзина */
+    get Basket() {
+        return this._basket
+    }
+
+    /**
+     * Метод имитирует отображение кнопки
+     */
+    render() { }
+
+    /**
+     * Метод имитирует нажатие кнопки "Добавить товар в корзину" */
+    click() {
+
+        this._basketProductsList.render()
+        this._basket.render()
+    }
+}
+
+
+/**
+ * Класс имитирует кнопку "Добавить товар в корзину"
+ */
+class BtnAddProductInBasketEmulator extends BtnBasketAbstractEmulator {
+
+    /**
+     * ИД товара */
+    _productID
+
+    /**
+     * Список товаров в интренет магазине */
+    _inetShopProductsList
 
     /**
      * Индекс товара */
@@ -417,10 +460,11 @@ class BtnAbstractInetShopProductListPlus {
      * 
      */
     constructor(productID, inetShopProductsList, basketProductsList, basket) {
-        this._productID = productID
+
+        super(basketProductsList, basket)
+
+        this._productID = productID        
         this._inetShopProductsList = inetShopProductsList
-        this._basketProductsList = basketProductsList
-        this._basket = basket
 
         //Получим индекс товара в перечне товаров интернет магазина
         this._index = this._inetShopProductsList.getIndexFromID(this._productID)
@@ -439,18 +483,6 @@ class BtnAbstractInetShopProductListPlus {
     }
 
     /**
-     * Список товаров в корзине пользователя */
-    get BasketProductsList() {
-        return this._basketProductsList
-    }
-
-    /**
-     * Корзина */
-    get Basket() {
-        return this._basket
-    }
-
-    /**
      * Индекс товара в списке товаров интеренет магазина*/
     get Index() {
         return this._index
@@ -458,16 +490,14 @@ class BtnAbstractInetShopProductListPlus {
 
     render() {
 
-    }
+    } 
 
     /**
      * Метод имитирует нажатие кнопки "Добавить товар в корзину" */
     click() {
-        this._basketProductsList.addProduct(this._productID)
+        super.BasketProductsList.addProduct(this._productID)
 
-        this._basketProductsList.render()
-        
-        this._basket.render()
+        super.click()
     }
 }
 
@@ -475,15 +505,7 @@ class BtnAbstractInetShopProductListPlus {
 /**
  * Класс имитирует кнопку "Удалить все товары из корзины"
  */
-class BtnAbstractDeleteAllProducts {
-
-    /**
-     * Список товаров в корзине */
-    _basketProductsList
-
-    /**
-     * Корзина пользователя */
-    _basket
+class BtnDeleteAllProductsEmulator extends BtnBasketAbstractEmulator {
 
     /**
      * @constructor
@@ -492,20 +514,8 @@ class BtnAbstractDeleteAllProducts {
      * @param basket {object} - Корзина пользователя
      */
     constructor(basketProductsList, basket) {
-        this._basketProductsList = basketProductsList
-        this._basket = basket
-    }
 
-    /**
-     * Список товаров в корзине */
-    get BasketProductsList() {
-        return this._basketProductsList
-    }
-
-    /**
-     * Корзина пользователя */
-    get Basket() {
-        return this._basket
+        super(basketProductsList, basket)
     }
 
     render() {
@@ -515,11 +525,9 @@ class BtnAbstractDeleteAllProducts {
     /**
      * Метод имитирует нажатие кнопки "Удалить все товары из корзины" */
     click() {
-        this._basketProductsList.deleteAllProducts()
+        super.BasketProductsList.deleteAllProducts()
 
-        this._basketProductsList.render()
-
-        this._basket.render()
+        super.click()
     }
 }
 
@@ -527,19 +535,11 @@ class BtnAbstractDeleteAllProducts {
 /**
  * Класс имитирует конпку "Удалить элемент товара из корзины"
  */
-class BtnAbstractDeleteProductElement {
+class BtnDeleteProductElementEmulator extends BtnBasketAbstractEmulator {
 
     /**
      * ИД товара */
     _id
-
-    /**
-     * Список товаров в корзине */
-    _basketProductsList
-
-    /**
-     * Корзина пользователя */
-    _basket
 
     /**
      * @constructor
@@ -549,28 +549,16 @@ class BtnAbstractDeleteProductElement {
      * @param basket {object} - Корзина пользователя
     */
     constructor(id, basketProductsList, basket) {
-        
+       
+        super(basketProductsList, basket)
+
         this._id = id
-        this._basketProductsList = basketProductsList
-        this._basket = basket
     }
 
     /**
      * ИД товара */
     get ID() {
         return this._id
-    }
-
-    /**
-     * Список товаров в корзине */
-    get BasketProductsList() {
-        return this._basketProductsList
-    }
-
-    /**
-     * Корзина пользователя */
-    get Basket() {
-        return this._basket
     }
 
     render() {
@@ -580,11 +568,9 @@ class BtnAbstractDeleteProductElement {
     /**
      * Метод имитирует нажатие кнопки "Удалить элемент товара из корзины" */
     click() {
-        this._basketProductsList.deleteProductElement(this._id)
+        super.BasketProductsList.deleteProductElement(this._id)
 
-        this._basketProductsList.render()
-        
-        this._basket.render()
+        super.click()
     }
 }
 
@@ -592,19 +578,11 @@ class BtnAbstractDeleteProductElement {
 /**
  * Класс имитирует конпку "Удалить товар из корзины"
  */
-class BtnAbstractDeleteProduct {
+class BtnDeleteProductEmulator extends BtnBasketAbstractEmulator {
 
     /**
      * ИД товара */
     _id
-
-    /**
-     * Список товаров в корзине */
-    _basketProductsList
-
-    /**
-     * Корзина пользователя */
-    _basket
 
     /**
      * @constructor
@@ -615,27 +593,16 @@ class BtnAbstractDeleteProduct {
     */
     constructor(id, basketProductsList, basket) {
         
+        super(basketProductsList, basket)
+
         this._id = id
-        this._basketProductsList = basketProductsList
-        this._basket = basket
+        
     }
 
     /**
      * ИД товара */
     get ID() {
         return this._id
-    }
-
-    /**
-     * Список товаров в корзине */
-    get BasketProductsList() {
-        return this._basketProductsList
-    }
-
-    /**
-     * Корзина пользователя */
-    get Basket() {
-        return this._basket
     }
 
     render() {
@@ -645,10 +612,9 @@ class BtnAbstractDeleteProduct {
     /**
      * Метод имитирует нажатие кнопки "Удалить товар из корзины" */
     click() {
-        this._basketProductsList.deleteProduct(this._id)
+        super.BasketProductsList.deleteProduct(this._id)
         
-        this._basketProductsList.render()
-        this._basket.render()
+        super.click()
     }
 }
 
@@ -662,7 +628,7 @@ class Program {
     /**
      * Гланый метод приложения
      */
-    static main() {
+    static test() {
         const BREAK_LINE = "--------------------------------------------------------------"
         let PRODUCT_ID = 100
 
@@ -706,31 +672,31 @@ class Program {
             const basket = new Basket(basketProductsList)
 
             //Создадим кнопку для добавления товара в корзину
-            const btnInetShopProductListPlus = new BtnAbstractInetShopProductListPlus
+            const btnAddProductInBasketEmulator = new BtnAddProductInBasketEmulator
                 (
                     PRODUCT_ID, interShopProductsList, basketProductsList, basket
                 )
 
             //Имитируем нажатие на кнопку
-            btnInetShopProductListPlus.click()
+            btnAddProductInBasketEmulator.click()
 
             console.log("Увеличим кол-во товара в корзине на единицу (нажмём кнопку)")
-            btnInetShopProductListPlus.click()
+            btnAddProductInBasketEmulator.click()
                         
             console.log("Увеличим кол-во товара в корзине на единицу ещё раз (ещё раз нажмём кнопку)")
             console.log("Теперь в корзине должно быть 3 экземпляра товара")
-            btnInetShopProductListPlus.click()
+            btnAddProductInBasketEmulator.click()
 
             console.log("И затем одну единицу товара удалим из корзины (нажмём кнопку)")
-            const btnAbstractDeleteProductElement = 
-                new BtnAbstractDeleteProductElement(PRODUCT_ID, basketProductsList, basket)
+            const btnDeleteProductElementEmulator = 
+                new BtnDeleteProductElementEmulator(PRODUCT_ID, basketProductsList, basket)
 
-            btnAbstractDeleteProductElement.click()
+            btnDeleteProductElementEmulator.click()
 
             console.log("Удалим все товары из корзины")
             //Создадим кнопку для добавления товара в корзину
-            const btnDeleteAllProducts = new BtnAbstractDeleteAllProducts(basketProductsList, basket)
-            btnDeleteAllProducts.click()
+            const btnDeleteAllProductsEmulator = new BtnDeleteAllProductsEmulator(basketProductsList, basket)
+            btnDeleteAllProductsEmulator.click()
 
             console.log(BREAK_LINE)
 
@@ -750,18 +716,18 @@ class Program {
             console.log("Имитируем нажатие кнопки \"Добавить товар в корзину\"")
 
             //Создадим кнопку для добавления товара в корзину
-            const btnInetShopProductListPlus_90 = new BtnAbstractInetShopProductListPlus
+            const btnAddProductInBasketEmulator_90 = new BtnAddProductInBasketEmulator
                 (
                     PRODUCT_ID, interShopProductsList, basketProductsList, basket
                 )
             //Имитируем нажатие на кнопку
-            btnInetShopProductListPlus_90.click()
+            btnAddProductInBasketEmulator_90.click()
 
-            console.log("И затем товар удалим из корзины (нажмём кнопку)")
-            const btnAbstractDeleteProduct_90 = 
-                new BtnAbstractDeleteProductElement(PRODUCT_ID, basketProductsList, basket)
+            console.log("И затем эту категорию товара удалим из корзины (нажмём кнопку)")
+            const btnDeleteProductEmulator_90 = 
+                new BtnDeleteProductEmulator(PRODUCT_ID, basketProductsList, basket)
             
-            btnAbstractDeleteProduct_90.click()
+            btnDeleteProductEmulator_90.click()
         }
         catch (ex) {
             console.log(`${ex.name} - ${ex.message}!`)
@@ -771,4 +737,4 @@ class Program {
 }
 
 
-Program.main()
+Program.test()
