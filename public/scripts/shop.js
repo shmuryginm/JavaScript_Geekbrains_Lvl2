@@ -141,10 +141,28 @@ class ProductsList {
 class InetShopProductsList extends ProductsList {
 
     /**
+     * Наименование HTML-селектора 
+     * в который будем выводить список товаров интернет-магазина
+    */
+    _querySelectorName
+
+    /**
      * @constructor
+     * 
+     * @param {querySelectorName} {string} - Наименование HTML-селектора 
+     * в который будем выводить список товаров интернет-магазина
      */
-    constructor() {
+    constructor(querySelectorName) {
         super()
+
+        this._querySelectorName = querySelectorName
+    }
+
+    /**
+     * Наименование HTML-селектора в который будем выводить список товаров интернет-магазина
+     */
+    get QuerySelectorName() {
+        return this._querySelectorName
     }
 
     /**
@@ -184,10 +202,39 @@ class InetShopProductsList extends ProductsList {
         this.Items.push(...products)
     }
 
+
+    _createProductsList() {
+        let s = ""
+
+        for (let i = 0; i < this.Items.length; i++) {
+            let part = "<p>" + this.Items[i].Name
+                + ", цена: " + this.Items[i].Price
+                + " <button type = \"button\" name=\"btnProductList_" + this.Items[i].ID + "\">+</button></p><br>"
+
+            s = s + part    
+        }
+
+        return s
+    }
+
+
     /**
      * Метод отображает перечень товаров интернет магазина */
     render() {
-        console.log(...this.Items)
+        let placeToRender = document.querySelector("." + this._querySelectorName)
+
+        if (placeToRender != null) {
+            const productList = document.createElement("text")
+            productList.classList.add("Products")
+
+            let s = this._createProductsList()
+
+            productList.innerHTML = s
+
+            placeToRender.appendChild(productList)
+        }
+
+        //console.log(...this.Items)
     }
 }
 
@@ -224,7 +271,7 @@ class BasketProductsList extends ProductsList {
      * 
      * @param {number} {id} - ИД товара 
      * 
-     * @returns {number} - 
+     * @returns {number} - индекс товара в списке товаров корзины
     */
     addProduct(id) {
         //Получим индекс с заданным ИД в массиве товаров корзины
@@ -626,8 +673,66 @@ class BtnDeleteProductEmulator extends BtnBasketAbstractEmulator {
 class Program {
 
     /**
+     * 
+     * @param name - Наименование элемента упраления вида [A-z]_[0-9]
+     * 
+     * @returns - Код из наименования элемена управления
+     */
+    static _getProductIdFromName(name) {
+        let arr = name.split("_")
+
+        return (arr.length > 0) ? arr[1] : ""
+    }
+
+
+    /**
      * Гланый метод приложения
      */
+    static main() {
+
+        try {
+            //Создадим объект для хранения списка товаров интернет магазина
+            const interShopProductsList = new InetShopProductsList("productsList")
+
+            //Получим список товаров интернет магазина
+            interShopProductsList.getProductsList()
+
+            //Создадим объект для списка товаров в корзине
+            const basketProductsList = new BasketProductsList(interShopProductsList)
+
+            //Создадим объект корзины товаров
+            const basket = new Basket(basketProductsList)
+
+            interShopProductsList.render()
+
+
+            // TO DO Прикрепить к событию onclick каждой кнопки соответствующий метод
+
+
+            console.log("Корзина")
+            //Создадим кнопку для добавления товара в корзину
+            let btnAddProductInBasket = new BtnAddProductInBasketEmulator
+                (
+                    10, interShopProductsList, basketProductsList, basket
+                )
+             
+            let btn = document.getElementsByName("btnProductList_10")[0]
+
+            if (btn != null) {
+                btn.addEventListener("click", () => {
+                    btnAddProductInBasket.click()
+                })
+            }
+            basketProductsList.render()
+            basket.render()
+        }
+        catch (ex) {
+            console.log(`${ex.name} - ${ex.message}!`)
+        }
+
+    }
+
+
     static test() {
         const BREAK_LINE = "--------------------------------------------------------------"
         let PRODUCT_ID = 100
@@ -732,9 +837,8 @@ class Program {
         catch (ex) {
             console.log(`${ex.name} - ${ex.message}!`)
         }
-
     }
 }
 
 
-Program.test()
+Program.main()
