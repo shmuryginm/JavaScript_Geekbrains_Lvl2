@@ -263,11 +263,13 @@ class BasketProductsList extends ProductsList {
      * @constructor
      * 
      * @param {object} {inetShopProductsList} - Список товаров в интернет магазине
+     * @param {string} {querySelectorName} - Наименование HTML-селектора для вывода
     */
-    constructor(inetShopProductsList) {
+    constructor(inetShopProductsList, querySelectorName) {
         super()
 
         this._inetShopProductsList = inetShopProductsList
+        this._querySelectorName = querySelectorName
     }
 
     /**
@@ -287,8 +289,6 @@ class BasketProductsList extends ProductsList {
     addProduct(id) {
         //Получим индекс с заданным ИД в массиве товаров корзины
         let index = this.getIndexFromID(id)
-
-        console.log(id, index)
 
         //Товар в корзину уже был добавлен?
         if (index != -1) {
@@ -368,8 +368,48 @@ class BasketProductsList extends ProductsList {
 
 
     /**
+     * Метод создаёт HTML-источник для вывода на веб-страницу */
+    _createBasketProductsList() {
+        let s = ""
+
+        for (let i = 0; i < this.Items.length; i++) {
+            let part = "<p>" + this.Items[i].Name
+                + ", цена: " + this.Items[i].Price
+                + ", кол-во: " + this.Items[i].Count
+                + " <button type = \"button\" name=\"btnDeleteElement_" + this.Items[i].ID + "\">-</button>"
+                + " <button type = \"button\" name=\"btnDeleteProduct_" + this.Items[i].ID + "\">:-(</button>"
+                + "</p><br>"
+
+            s = s + part    
+        }
+
+        return s
+    }
+
+
+    /**
      * Метод отображает перечень товаров в корзине */
     render() {
+        //Найдём в документе место для размещения списка товаров интернет магазина
+        let placeToRender = document.querySelector("." + this._querySelectorName)
+
+        //Место для вывода оьбнаружено?
+        if (placeToRender != null) {            
+            //Создадим HTML-элемент для вывода списка товаров
+            const basketList = document.createElement("text")
+
+            basketList.classList.add("BasketProducts")
+
+            basketList.innerHTML = ""
+
+            //Получим HTML-источник для вывода на веб-страницу
+            let s = this._createBasketProductsList()
+
+            basketList.innerHTML = s
+
+            placeToRender.appendChild(basketList)
+        }
+        
         console.log(...this.Items)
     }
 } 
@@ -688,6 +728,8 @@ class Program {
     /**
      * Имя HTML-селектора для вывода списка товаров */
     static _btnInetShopProductsName = "btnProductList"
+    static _btnDeleteProductElementName = "btnDeleteElement"
+    static _btnDeleteProductName = "btnDeleteProduct"
 
     /**
      * Список товаров интернет магазина */
@@ -732,6 +774,62 @@ class Program {
 
         //Добавим товар в корзину
         btnAddProductInBasket.click();
+
+        for(let i = 0; i < this.basketProductsList.Items.length; i++) {
+            //Получаем ИД товара
+            let productID = this.basketProductsList.Items[i].ID    
+
+            let btn = document.getElementsByName(this._btnDeleteProductElementName + "_" + productID)[0]
+
+            if (btn != null) {
+                btn.addEventListener("click", () => {this.OnBtnDeleteProductElementClick(btn.name)})
+            }
+
+            btn = document.getElementsByName(this._btnDeleteProductName + "_" + productID)[0]
+
+            if (btn != null) {
+                btn.addEventListener("click", () => {this.OnBtnDeleteProductClick(btn.name)})
+            }
+
+        }
+    }
+
+
+    /**
+     * Метод удаляет элемент товара из группы товаров в корзине
+     * 
+     * @param btnName {string} - Имя кнопки, которую нажали
+     */
+    static OnBtnDeleteProductElementClick(btnName) {
+        //Получим код товара
+        let productID = this._getProductIdFromName(btnName)
+
+        //Создадим объект для удаления единицы товара из корзины
+        let btnDeleteProductElementEmulator = new BtnDeleteProductElementEmulator
+        (
+            productID, this.basketProductsList, this.basket
+        )
+
+        btnDeleteProductElementEmulator.click()        
+    }
+
+
+    /**
+     * Метод удаляет товара из корзины
+     * 
+     * @param btnName {string} - Имя кнопки, которую нажали
+     */
+    static OnBtnDeleteProductClick(btnName) {
+        //Получим код товара
+        let productID = this._getProductIdFromName(btnName)
+
+        //Создадим объект для удаления единицы товара из корзины
+        let btnDeleteProductEmulator = new BtnDeleteProductEmulator
+        (
+            productID, this.basketProductsList, this.basket
+        )
+
+        btnDeleteProductEmulator.click()        
     }
 
 
@@ -748,7 +846,7 @@ class Program {
             this.interShopProductsList.getProductsList()
 
             //Создадим объект для списка товаров в корзине
-            this.basketProductsList = new BasketProductsList(this.interShopProductsList)
+            this.basketProductsList = new BasketProductsList(this.interShopProductsList, "basketList")
 
             //Создадим объект корзины товаров
             this.basket = new Basket(this.basketProductsList)
