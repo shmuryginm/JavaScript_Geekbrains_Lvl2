@@ -225,7 +225,8 @@ class InetShopProductsList extends ProductsList {
 
 
     /**
-     * Метод отображает перечень товаров интернет магазина */
+     * Метод отображает перечень товаров интернет магазина 
+    */
     render() {
         //Найдём в документе место для размещения списка товаров интернет магазина
         let placeToRender = document.querySelector("." + this._querySelectorName)
