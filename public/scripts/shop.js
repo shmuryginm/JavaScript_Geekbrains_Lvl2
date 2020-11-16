@@ -215,7 +215,8 @@ class InetShopProductsList extends ProductsList {
         for (let i = 0; i < this.Items.length; i++) {
             let part = "<p>" + this.Items[i].Name
                 + ", цена: " + this.Items[i].Price
-                + " <button type = \"button\" name=\"btnProductList_" + this.Items[i].ID + "\">+</button></p><br>"
+                + " <button type = \"button\" name=\"btnProductList_" + this.Items[i].ID + "\"" 
+                + "value = \"" +this.Items[i].ID + "\">+</button></p><br>"
 
             s = s + part    
         }
@@ -394,14 +395,15 @@ class BasketProductsList extends ProductsList {
         //Найдём в документе место для размещения списка товаров интернет магазина
         let placeToRender = document.querySelector("." + this._querySelectorName)
 
-        //Место для вывода оьбнаружено?
+        //Место для вывода обнаружено?
         if (placeToRender != null) {            
             //Создадим HTML-элемент для вывода списка товаров
             const basketList = document.createElement("text")
 
             basketList.classList.add("BasketProducts")
 
-            basketList.innerHTML = ""
+            //Очистим список товаров в корзине
+            placeToRender.innerHTML = ""
 
             //Получим HTML-источник для вывода на веб-страницу
             let s = this._createBasketProductsList()
@@ -745,6 +747,9 @@ class Program {
     static basket
 
 
+    // TODO Этой функции быть не должно
+
+
     /**
      * @param name - Наименование элемента упраления вида [A-z]_[0-9]
      * 
@@ -760,21 +765,22 @@ class Program {
     /**
      * Метод добавляет товар в корзину, в зависимости от того, какая была нажата кнопка
      * 
-     * @param btnName {string} - Имя кнопки, которую нажали
+     * @param value {string} - Свойство "value" кнопки, которую нажали - код товара
      */
-    static OnBtnAddToBasketClick(btnName) {
-
-        //Получим код товара
-        let productID = this._getProductIdFromName(btnName)
-
+    static OnBtnAddToBasketClick(value) {
+        
         //Создадим объект для добавления товара в корзину
         let btnAddProductInBasket = new BtnAddProductInBasketEmulator
         (
-            productID, this.interShopProductsList, this.basketProductsList, this.basket
+            value, this.interShopProductsList, this.basketProductsList, this.basket
         )
 
         //Добавим товар в корзину
         btnAddProductInBasket.click();
+
+
+        // TODO разобраться с этими циклами
+
 
         for(let i = 0; i < this.basketProductsList.Items.length; i++) {
             //Получаем ИД товара
@@ -783,15 +789,18 @@ class Program {
             let btn = document.getElementsByName(this._btnDeleteProductElementName + "_" + productID)[0]
 
             if (btn != null) {
+                console.log(btn.name)
+                
                 btn.addEventListener("click", () => {this.OnBtnDeleteProductElementClick(btn.name)})
             }
 
+            /*
             btn = document.getElementsByName(this._btnDeleteProductName + "_" + productID)[0]
 
             if (btn != null) {
                 btn.addEventListener("click", () => {this.OnBtnDeleteProductClick(btn.name)})
             }
-
+            */
         }
     }
 
@@ -835,39 +844,59 @@ class Program {
 
 
     /**
+     * Метод устанавливает обработчик на кнопки списка товаров 
+     * ("Добавить товар в корзину")
+     */
+    static _setHandlerForProductsListButtons() {
+
+        for (let i = 0; i < this.interShopProductsList.Items.length; i++) {
+            //Получаем ИД товара
+            let productID = this.interShopProductsList.Items[i].ID    
+
+            let btn = document.getElementsByName(this._btnInetShopProductsName + "_" + productID)[0]
+
+            if (btn != null) {
+                btn.addEventListener("click", () => {this.OnBtnAddToBasketClick(btn.value)})
+            }
+        }
+    }
+
+
+    /**
+     * Метод создаёт объекты интернет-маазина
+     */
+    static _prepareShopObjects() {
+
+        //Создадим объект для хранения списка товаров интернет магазина
+        this.interShopProductsList = new InetShopProductsList("productsList")
+
+        //Получим список товаров интернет магазина
+        this.interShopProductsList.getProductsList()
+
+        //Создадим объект для списка товаров в корзине
+        this.basketProductsList = new BasketProductsList(this.interShopProductsList, "basketList")
+
+        //Создадим объект корзины товаров
+        this.basket = new Basket(this.basketProductsList)
+    }
+
+
+    /**
      * Гланый метод приложения
      */
     static main() {
 
         try {
-            //Создадим объект для хранения списка товаров интернет магазина
-            this.interShopProductsList = new InetShopProductsList("productsList")
+            //Подготовим к работе объекты интенет-магазина
+            this._prepareShopObjects()
 
-            //Получим список товаров интернет магазина
-            this.interShopProductsList.getProductsList()
-
-            //Создадим объект для списка товаров в корзине
-            this.basketProductsList = new BasketProductsList(this.interShopProductsList, "basketList")
-
-            //Создадим объект корзины товаров
-            this.basket = new Basket(this.basketProductsList)
-
+            //Выведем список товаров интернет-магазина
             this.interShopProductsList.render()
-
 
             console.log("Корзина")
 
-            
-            for(let i = 0; i < this.interShopProductsList.Items.length; i++) {
-                //Получаем ИД товара
-                let productID = this.interShopProductsList.Items[i].ID    
-
-                let btn = document.getElementsByName(this._btnInetShopProductsName + "_" + productID)[0]
-
-                if (btn != null) {
-                    btn.addEventListener("click", () => {this.OnBtnAddToBasketClick(btn.name)})
-                }
-            }
+            //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
+            this._setHandlerForProductsListButtons()            
         }
         catch (ex) {
             console.log(`${ex.name} - ${ex.message}!`)
