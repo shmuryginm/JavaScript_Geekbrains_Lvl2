@@ -388,7 +388,8 @@ class BasketProductsList extends ProductsList {
 
 
     /**
-     * Метод отображает перечень товаров в корзине */
+     * Метод отображает перечень товаров в корзине 
+    */
     render() {
         //Найдём в документе место для размещения списка товаров интернет магазина
         let placeToRender = document.querySelector("." + this._querySelectorName)
