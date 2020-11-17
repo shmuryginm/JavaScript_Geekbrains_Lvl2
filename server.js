@@ -49,7 +49,9 @@ const server = http.createServer((req, res) => {
         if (ex.code === 'ENOENT') {
             console.log(`Ошибка! Файл ${url} не найден!`)
         } else {
-            // TODO Ревлизовать передачу браузеру кода состояния HTTP
+
+            // TODO: Ревлизовать передачу браузеру кода состояния HTTP
+            
             console.log(`Ошибка! ${ex.name} ${ex.message}!`)
         }
     }
