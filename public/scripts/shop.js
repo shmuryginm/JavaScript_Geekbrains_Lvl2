@@ -22,9 +22,9 @@ class InetShopProduct {
     /**
       * @constructor
       * 
-      * @param id    {number} - Идентификатор товара
-      * @param name  {string} - Наименование товара
-      * @param price {number} - Цена товарв
+      * @param id    {number} Идентификатор товара
+      * @param name  {string} Наименование товара
+      * @param price {number} Цена товарв
       * 
     */
      constructor(id, name, price) {
@@ -59,35 +59,39 @@ class InetShopProduct {
 class BasketProduct extends InetShopProduct {
     /**
      * Количество товара в корзине */
-    _count = 0
+    _count
 
     /**
       * @constructor
       * 
-      * @param id    {number} - Идентификатор товара
-      * @param name  {string} - Наименование товара
-      * @param price {number} - Цена товарв
+      * @param id    {number} Идентификатор товара
+      * @param name  {string} Наименование товара
+      * @param price {number} Цена товарв
       * 
     */
     constructor(id, name, price) {
         super(id, name, price)
+
+        this._count = 0
     }
 
     /**
-     * Данное свойство только для чтения */
+     * Количество товара одной группы в корзине
+    */
     get Count() {
         return this._count
     }
 
     /**
-     * Метод увеличивает кол-во товара в корзине на единицу */
+     * Метод увеличивает кол-во товара в корзине на единицу
+    */
     incCount() {
         this._count++
     }
 
     /**
      * Метод уменьшает кол-во товара в корзине на единицу (если кол-во > 0)
-     */
+    */
     decCount() {
         if (this._count > 0) {
             this._count--
@@ -112,9 +116,9 @@ class ProductsList {
     /**
      * Метод возвращает индекс в массиве товаров по ИД товара
      * 
-     * @param {number} {id} - Идентификатор товара
+     * @param id {number} Идентификатор товара
      * 
-     * @returns {number} - Индекс в массиве товаров по ИД товара. -1 - если массив пустой
+     * @returns {number} Индекс в массиве товаров по ИД товара. -1 - если массив пустой
     */
     getIndexFromID(id) {
         //Товаров нет?
@@ -136,8 +140,10 @@ class ProductsList {
         return -1
     }
 
+
     /**
-     * Метод отображает товары */
+     * Метод отображает товары 
+    */
     render() { }
 }
 
@@ -148,8 +154,12 @@ class ProductsList {
 class InetShopProductsList extends ProductsList {
 
     /**
-      * Количество товаров для одной порции загрузки */
-     _chunkSize = 2
+      * Количество товаров для одной порции загрузки в список для вывода */
+     _chunkSize
+
+     /**
+      * Текущее количество товаров в списке для вывода */
+     _currentItems
 
     /**
      * Наименование HTML-блока 
@@ -157,33 +167,53 @@ class InetShopProductsList extends ProductsList {
     */
     _querySelectorName
 
+
     /**
      * @constructor
      * 
-     * @param querySelectorName {string} - Наименование HTML-блока 
-     * в который будем выводить список товаров интернет-магазина
+     * @param chunkSize         {number} Количество товаров для одной порции загрузки в список для вывода
+     * @param querySelectorName {string} Наименование HTML-блока в который будем выводить список товаров интернет-магазина
      * 
      */
-    constructor(querySelectorName) {
+    constructor(chunkSize, querySelectorName) {
         super()
 
         this._querySelectorName = querySelectorName
+
+        this._chunkSize = chunkSize
+        this._currentItems = chunkSize
+    }
+
+    /**
+     * Количество товаров для одной порции загрузки в список для вывода
+    */
+    get ChunkSize() {
+        return this._chunkSize
+    }
+
+    /**
+     * Количество отображённых товаолв в списке для вывода
+    */
+    get CurrentItems() {
+        return this._currentItems
     }
 
     /**
      * Наименование HTML-блока в который будем выводить список товаров интернет-магазина
-     */
+    */
     get QuerySelectorName() {
         return this._querySelectorName
     }
 
+
     /**
      * Заглушка - имитатор запроса на сервер
      * Возвращает массив свойств товаров интернет магазина
+     * 
     */ 
     _getProducts() {
 
-        // TODO: Выполнить асинхронное получение данных из псевдо-БД
+        // TODO: Выполнить асинхронное получение данных из псевдо-БД и установить в заголовке @returns
 
         return [
             { id: 10,  name: "Shirt",     price:  1500 },
@@ -199,9 +229,12 @@ class InetShopProductsList extends ProductsList {
         ]
     }
 
+
     /**
-     * Метод из массива свойств товаров получает массив объектов */
+     * Метод из массива свойств товаров получает массив объектов
+    */
     getProductsList() {
+
         //Забираем массив товаров, на основе которых будем создавать объекты товаров
         let products = this._getProducts()
 
@@ -219,14 +252,36 @@ class InetShopProductsList extends ProductsList {
 
 
     /**
-     * Метод создаёт HTML-источник для вывода на веб-страницу */
+     * Метод определяет количество элементов для загрузки
+    */
+    incCurrentItems() {
+
+        //Текущее количество элементов + ещё одна порция НЕ превышает общее количество товаров?
+        if (this._currentItems + this._chunkSize <= this.Items.length) {
+            //Увеличиваем количество товаров для вывода
+            this._currentItems += this._chunkSize
+        }
+        else {
+            //Выводим все товары
+            this._currentItems = this.Items.length
+        }
+    }
+    
+
+    /**
+     * Метод формирует HTML-источник для вывода списка товаров на веб-страницу
+     * 
+     * @returns {string} HTML-источник для вывода списка товаров на веб-страницу
+     * 
+    */
     _createProductsList() {
+
         let s = ""
 
-        for (let i = 0; i < this.Items.length; i++) {
+        for (let i = 0; i < this.CurrentItems; i++) {
             let part = 
                 `<p>${this.Items[i].Name}, цена: ${this.Items[i].Price}` + 
-                `<button type = "button" name="btnProductList_${this.Items[i].ID}" value="${this.Items[i].ID}">+</button></p><br>`
+                ` <button type = "button" name="btnProductList_${this.Items[i].ID}" value="${this.Items[i].ID}">+</button></p><br>`
 
             s = s + part    
         }
@@ -239,6 +294,7 @@ class InetShopProductsList extends ProductsList {
      * Метод отображает перечень товаров интернет магазина 
     */
     render() {
+
         //Найдём в документе место для размещения списка товаров интернет магазина
         let placeToRender = document.querySelector("." + this._querySelectorName)
 
@@ -252,6 +308,10 @@ class InetShopProductsList extends ProductsList {
             //Получим HTML-источник для вывода на веб-страницу
             let s = this._createProductsList()
 
+            //Очистим поле для вывода товаров
+            placeToRender.innerHTML = ""
+
+            //Выводим список товаров на веб-страницу
             productList.innerHTML = s
 
             placeToRender.appendChild(productList)
@@ -272,15 +332,14 @@ class BasketProductsList extends ProductsList {
     _inetShopProductsList
 
     /**
-     * Наименование HTML-блока
-     */
+     * Наименование HTML-блока */
     _querySelectorName
 
     /**
      * @constructor
      * 
-     * @param inetShopProductsList {object} - Список товаров в интернет магазине
-     * @param querySelectorName    {string} - Наименование HTML-блока для вывода
+     * @param inetShopProductsList {object} Список товаров в интернет магазине
+     * @param querySelectorName    {string} Наименование HTML-блока для вывода
      * 
     */
     constructor(inetShopProductsList, querySelectorName) {
@@ -291,7 +350,8 @@ class BasketProductsList extends ProductsList {
     }
 
     /**
-     * Список товаров интернет магазина изменять нельзя */
+     * Список товаров интернет магазина
+    */
     get InetShopProductsList() {
         return this._inetShopProductsList
     }
@@ -300,11 +360,12 @@ class BasketProductsList extends ProductsList {
     /**
      * Метод добавляет товар в список товаров корзины
      * 
-     * @param {number} {id} - ИД товара 
+     * @param id {number} ИД товара 
      * 
-     * @returns {number} - индекс товара в списке товаров корзины
+     * @returns {number} Индекс товара в списке товаров корзины
     */
     addProduct(id) {
+
         //Получим индекс с заданным ИД в массиве товаров корзины
         let index = this.getIndexFromID(id)
 
@@ -336,12 +397,14 @@ class BasketProductsList extends ProductsList {
         return this.Items.length - 1
     }
 
+
     /**
      * Метод удаляет экземпляр товара из списка товаров
      * 
-     * @param {number} {id} - ИД товара
+     * @param id {number} ИД товара
     */
     deleteProductElement(id) {
+
         //Получим индекс в массиве объектов корзины с заданным ИД
         const index = this.getIndexFromID(id)
 
@@ -360,12 +423,14 @@ class BasketProductsList extends ProductsList {
         }
     }
 
+
     /**
      * Метод удаляет товар из списка товаров корзины
      * 
-     * @param {number} {id} - ИД товара 
+     * @param id {number} ИД товара 
     */
     deleteProduct(id) {
+
         //Получим индекс в массиве объектов корзины с заданным ИД
         const index = this.getIndexFromID(id)
 
@@ -378,16 +443,24 @@ class BasketProductsList extends ProductsList {
         this.Items.splice(index, 1)
     }
 
+
     /**
-     * Метод удаляет все товары из корзины */
+     * Метод удаляет все товары из корзины 
+    */
     deleteAllProducts() {
+
         this.Items.splice(0, this.Items.length)
     }
 
 
     /**
-     * Метод создаёт HTML-источник для вывода на веб-страницу */
+     * Метод формирует HTML-источник для вывода на веб-страницу
+     * 
+     * @returns {string} HTML-источник для вывода на веб-страницу
+     * 
+    */
     _createBasketProductsList() {
+
         let s = ""
 
         for (let i = 0; i < this.Items.length; i++) {
@@ -403,8 +476,10 @@ class BasketProductsList extends ProductsList {
 
 
     /**
-     * Метод отображает перечень товаров в корзине */
+     * Метод отображает перечень товаров в корзине
+    */
     render() {
+
         //Найдём в документе место для размещения списка товаров интернет магазина
         let placeToRender = document.querySelector("." + this._querySelectorName)
 
@@ -451,8 +526,8 @@ class Basket {
     /**
      * @constructor
      * 
-     * @param basketProductsList {object} - Список товаров в корзине
-     * @param querySelectorName  {string} - Наименование HTML-блока
+     * @param basketProductsList {object} Список товаров в корзине
+     * @param querySelectorName  {string} Наименование HTML-блока
      * 
     */
     constructor(basketProductsList, querySelectorName) {
@@ -462,21 +537,29 @@ class Basket {
     }
 
     /**
-      * Все свойства класса предназначены только для чтения */
+      * Список товаров в корзине
+    */
     get BasketProductsList() {
         return this._basketProductsList
     }
 
+    /**
+     * Количество товаров в корзине
+     */
     get CountTotal() {
         return this._countTotal
     }
 
+    /**
+     * Итоговая стоимость товаров в корзине
+     */
     get SumTotal() {
         return this._sumTotal
     }
 
     /**
-     * Метод рассчитывает количество и общую стоимость товаров в корзине */
+     * Метод рассчитывает количество и общую стоимость товаров в корзине
+    */
     _calculate() {
 
         this._countTotal = 0
@@ -493,6 +576,7 @@ class Basket {
         }
     }
     
+
     /**
      * Метод отображает итоговоое количество товаров в корзине и их общую стоимость  
     */
@@ -541,8 +625,8 @@ class BtnBasketAbstract {
     /**
      * @constructor
      * 
-     * @param basketProductsList {object} - Список товаров в корзине пользователя
-     * @param basket             {object} - Корзина пользователя
+     * @param basketProductsList {object} Список товаров в корзине пользователя
+     * @param basket             {object} Корзина пользователя
      * 
      */
     constructor(basketProductsList, basket) {
@@ -551,16 +635,19 @@ class BtnBasketAbstract {
     }
 
     /**
-     * Список товаров в корзине пользователя */
+     * Список товаров в корзине пользователя
+    */
     get BasketProductsList() {
         return this._basketProductsList
     }
 
     /**
-     * Корзина */
+     * Корзина
+    */
     get Basket() {
         return this._basket
     }
+
 
     /**
      * Метод имитирует отображение кнопки
@@ -568,7 +655,8 @@ class BtnBasketAbstract {
     render() { }
 
     /**
-     * Метод имитирует нажатие кнопки "Добавить товар в корзину" */
+     * Метод имитирует нажатие кнопки "Добавить товар в корзину"
+    */
     click() {
 
         this._basketProductsList.render()
@@ -578,7 +666,7 @@ class BtnBasketAbstract {
 
 
 /**
- * Класс имитирует кнопку "Добавить товар в корзину"
+ * Класс реализует кнопку "Добавить товар в корзину"
  */
 class BtnAddProductInBasket extends BtnBasketAbstract {
 
@@ -597,10 +685,10 @@ class BtnAddProductInBasket extends BtnBasketAbstract {
     /**
      * @constructor
      * 
-     * @param productID            {number} - ИД товара
-     * @param inetShopProductsList {object} - Список товаров интернет магазина
-     * @param basketProductsList   {object} - Список товаров в корзине пользователя
-     * @param basket               {object} - Корзина пользователя
+     * @param productID            {number} ИД товара
+     * @param inetShopProductsList {object} Список товаров интернет магазина
+     * @param basketProductsList   {object} Список товаров в корзине пользователя
+     * @param basket               {object} Корзина пользователя
      * 
      */
     constructor(productID, inetShopProductsList, basketProductsList, basket) {
@@ -615,29 +703,34 @@ class BtnAddProductInBasket extends BtnBasketAbstract {
     }
 
     /**
-     * Идентификатор товара */
+     * Идентификатор товара 
+    */
     get ProductID() {
         return this._productID
     }
 
     /**
-     * Список товаров в интернет магазине */
+     * Список товаров в интернет магазине 
+    */
     get InetShopProductsList() {
         return this._interShopProductsList
     }
 
     /**
-     * Индекс товара в списке товаров интеренет магазина*/
+     * Индекс товара в списке товаров интеренет магазина
+    */
     get Index() {
         return this._index
     }
+
 
     render() {
 
     } 
 
     /**
-     * Метод имитирует нажатие кнопки "Добавить товар в корзину" */
+     * Метод релизует нажатие кнопки "Добавить товар в корзину"
+    */
     click() {
         this.BasketProductsList.addProduct(this._productID)
 
@@ -647,15 +740,15 @@ class BtnAddProductInBasket extends BtnBasketAbstract {
 
 
 /**
- * Класс имитирует кнопку "Удалить все товары из корзины"
+ * Класс реализует кнопку "Удалить все товары из корзины"
  */
 class BtnDeleteAllProducts extends BtnBasketAbstract {
 
     /**
      * @constructor
      * 
-     * @param basketProductsList {object} - Список товаров в корзине
-     * @param basket             {object} - Корзина пользователя
+     * @param basketProductsList {object} Список товаров в корзине
+     * @param basket             {object} Корзина пользователя
      * 
      */
     constructor(basketProductsList, basket) {
@@ -663,13 +756,17 @@ class BtnDeleteAllProducts extends BtnBasketAbstract {
         super(basketProductsList, basket)
     }
 
+
     render() {
 
     }
 
+
     /**
-     * Метод имитирует нажатие кнопки "Удалить все товары из корзины" */
+     * Метод реализует нажатие кнопки "Удалить все товары из корзины" 
+    */
     click() {
+
         super.BasketProductsList.deleteAllProducts()
 
         super.click()
@@ -678,7 +775,7 @@ class BtnDeleteAllProducts extends BtnBasketAbstract {
 
 
 /**
- * Класс имитирует конпку "Удалить элемент товара из корзины"
+ * Класс реализует конпку "Удалить элемент товара из корзины"
  */
 class BtnDeleteProductElement extends BtnBasketAbstract {
 
@@ -689,9 +786,9 @@ class BtnDeleteProductElement extends BtnBasketAbstract {
     /**
      * @constructor
      * 
-     * @param id                 {number} - ИД товара
-     * @param basketProductsList {object} - Список товаров в корзине
-     * @param basket             {object} - Корзина пользователя
+     * @param id                 {number} ИД товара
+     * @param basketProductsList {object} Список товаров в корзине
+     * @param basket             {object} Корзина пользователя
      * 
     */
     constructor(id, basketProductsList, basket) {
@@ -707,12 +804,15 @@ class BtnDeleteProductElement extends BtnBasketAbstract {
         return this._id
     }
 
+
     render() {
 
     }
 
+
     /**
-     * Метод имитирует нажатие кнопки "Удалить элемент товара из корзины" */
+     * Метод реализует нажатие кнопки "Удалить элемент товара из корзины" 
+    */
     click() {
         super.BasketProductsList.deleteProductElement(this._id)
 
@@ -722,7 +822,7 @@ class BtnDeleteProductElement extends BtnBasketAbstract {
 
 
 /**
- * Класс имитирует конпку "Удалить товар из корзины"
+ * Класс реализует конпку "Удалить товар из корзины"
  */
 class BtnDeleteProduct extends BtnBasketAbstract {
 
@@ -733,9 +833,9 @@ class BtnDeleteProduct extends BtnBasketAbstract {
     /**
      * @constructor
      * 
-     * @param id                 {number} - ИД товара
-     * @param basketProductsList {object} - Список товаров в корзине
-     * @param basket             {object} - Корзина пользователя
+     * @param id                 {number} ИД товара
+     * @param basketProductsList {object} Список товаров в корзине
+     * @param basket             {object} Корзина пользователя
      * 
     */
     constructor(id, basketProductsList, basket) {
@@ -747,17 +847,21 @@ class BtnDeleteProduct extends BtnBasketAbstract {
     }
 
     /**
-     * ИД товара */
+     * ИД товара 
+    */
     get ID() {
         return this._id
     }
+
 
     render() {
 
     }
     
+
     /**
-     * Метод имитирует нажатие кнопки "Удалить товар из корзины" */
+     * Метод реализует нажатие кнопки "Удалить товар из корзины" 
+    */
     click() {
         super.BasketProductsList.deleteProduct(this._id)
         
@@ -787,6 +891,11 @@ class Program {
      * Имя кнопки для удаления всех товаров из корзины */
     static _btnDeleteAllProductsName = "ClearBasket"
 
+    /**
+     * Имя кнопки для получения следующей порции товаров магазина */
+    static _btnGetNextChunkName = "btnAddNextChunk"
+
+
     //#region Objects
 
     /**
@@ -810,7 +919,7 @@ class Program {
     static _prepareShopObjects() {
 
         //Создадим объект для хранения списка товаров интернет магазина
-        this.interShopProductsList = new InetShopProductsList("productsList")
+        this.interShopProductsList = new InetShopProductsList(2, "productsList")
 
         //Получим список товаров интернет магазина
         this.interShopProductsList.getProductsList()
@@ -824,9 +933,10 @@ class Program {
     
 
     /**
-     * Метод добавляет товар в корзину, в зависимости от того, какая была нажата кнопка
+     * Метод добавляет товар в корзину, в зависимости от того, какая была нажата кнопка в списке
      * 
-     * @param value {string} - Свойство "value" кнопки, которую нажали - код товара
+     * @param value {string} Свойство "value" кнопки, которую нажали
+     * 
      */
     static OnBtnAddToBasketClick(value) {
         
@@ -845,9 +955,10 @@ class Program {
 
 
     /**
-     * Метод удаляет элемент товара из группы товаров в корзине
+     * Метод удаляет элемент товара из группы товаров в корзине в зависимости от того, какая была нажата кнопка в списке
      * 
-     * @param value {string} - Свойство "value" кнопки, которую нажали - код товара
+     * @param value {string} Свойство "value" кнопки, которую нажали
+     * 
      */
     static OnBtnDeleteProductElementClick(value) {
 
@@ -898,12 +1009,31 @@ class Program {
 
 
     /**
+     * Метод отображает очередную порцию товаров в список товаров
+     */
+    static OnBtnGetNextChunkProducts() {
+
+        //Получим количество товаров, которые следует отобразить
+        this.interShopProductsList.incCurrentItems()
+
+        //Выведены не все товары?
+        if (this.interShopProductsList.CurrentItems <= this.interShopProductsList.Items.length) {
+            //Выведем список товаров
+            this.interShopProductsList.render()
+
+            //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
+            this._setHandlerForProductsListButtons()
+        }
+    }
+
+
+    /**
      * Метод устанавливает обработчик на кнопки списка товаров 
      * ("Добавить товар в корзину")
     */
     static _setHandlerForProductsListButtons() {
 
-        for (let i = 0; i < this.interShopProductsList.Items.length; i++) {
+        for (let i = 0; i < this.interShopProductsList.CurrentItems; i++) {
             //Получаем ИД товара
             let productID = this.interShopProductsList.Items[i].ID    
 
@@ -918,19 +1048,21 @@ class Program {
 
     /**
      * Метод устанавливает обработчик на кнопки списка товаров в корзине
-     */
+    */
     static _setHandlersForBasketButtons() {
 
-        for(let i = 0; i < this.basketProductsList.Items.length; i++) {
+        for (let i = 0; i < this.basketProductsList.Items.length; i++) {
             //Получаем ИД товара
             let productID = this.basketProductsList.Items[i].ID    
 
+            //Определим действия на нажатие кнопки "Удалить товар из группы товаров"
             let btn = document.getElementsByName(this._btnDeleteProductElementName + "_" + productID)[0]
 
             if (btn != null) {                
                 btn.addEventListener("click", () => {this.OnBtnDeleteProductElementClick(btn.value)})
             }
 
+            //Определим действия на нажатие кнопки "Удалить группу товаров"
             btn = document.getElementsByName(this._btnDeleteProductName + "_" + productID)[0]
 
             if (btn != null) {
@@ -940,13 +1072,29 @@ class Program {
     }
 
 
+    /**
+     * Метод устанавливает обработчик для кнопки удаления всех товаров из корзины
+    */
     static _setHandlerForDeleteAllProductsButtons() {
 
         let btn = document.getElementsByName(this._btnDeleteAllProductsName)[0]
 
         if (btn != null) {
-                btn.addEventListener("click", () => {this.OnBtnDeleteAllProducrs()})
+            btn.addEventListener("click", () => {this.OnBtnDeleteAllProducrs()})
         }
+    }
+
+
+    /**
+     * Метод устанавливает обработчик для кнопки получения следующей порции товаров
+    */
+    static _setHandlerForGetNextChunkProductsButtons() {
+
+        let btn = document.getElementsByName(this._btnGetNextChunkName)[0]
+
+        if (btn != null) {
+            btn.addEventListener("click", () => {this.OnBtnGetNextChunkProducts()})
+        }    
     }
 
 
@@ -962,11 +1110,14 @@ class Program {
             //Выведем список товаров интернет-магазина
             this.interShopProductsList.render()
 
-            //Выведем информацию о состоянии корзины (она должна быть пустой)
-            this.basket.render()
-
             //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
             this._setHandlerForProductsListButtons()
+
+            //Установим обработчик на кнопку "Добавить ещё"
+            this._setHandlerForGetNextChunkProductsButtons()
+
+            //Выведем информацию о состоянии корзины (она должна быть пустой)
+            this.basket.render()
 
             //Определим реакцию на кнопку "Очистить корзину"
             this._setHandlerForDeleteAllProductsButtons()
