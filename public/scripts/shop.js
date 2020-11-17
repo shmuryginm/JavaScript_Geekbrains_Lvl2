@@ -18,12 +18,14 @@ class InetShopProduct {
       * Цена товарв */
      _price
 
+     
     /**
       * @constructor
       * 
-      * @param {number} {id}    - Идентификатор товара
-      * @param {string} {name}  - Наименование товара
-      * @param {number} {price} - Цена товарв
+      * @param id    {number} - Идентификатор товара
+      * @param name  {string} - Наименование товара
+      * @param price {number} - Цена товарв
+      * 
     */
      constructor(id, name, price) {
         this._id = id
@@ -62,9 +64,10 @@ class BasketProduct extends InetShopProduct {
     /**
       * @constructor
       * 
-      * @param {number} {id}    - Идентификатор товара
-      * @param {string} {name}  - Наименование товара
-      * @param {number} {price} - Цена товарв
+      * @param id    {number} - Идентификатор товара
+      * @param name  {string} - Наименование товара
+      * @param price {number} - Цена товарв
+      * 
     */
     constructor(id, name, price) {
         super(id, name, price)
@@ -145,6 +148,10 @@ class ProductsList {
 class InetShopProductsList extends ProductsList {
 
     /**
+      * Количество товаров для одной порции загрузки */
+     _chunkSize = 2
+
+    /**
      * Наименование HTML-блока 
      * в который будем выводить список товаров интернет-магазина
     */
@@ -153,8 +160,9 @@ class InetShopProductsList extends ProductsList {
     /**
      * @constructor
      * 
-     * @param {querySelectorName} {string} - Наименование HTML-блока 
+     * @param querySelectorName {string} - Наименование HTML-блока 
      * в который будем выводить список товаров интернет-магазина
+     * 
      */
     constructor(querySelectorName) {
         super()
@@ -271,8 +279,9 @@ class BasketProductsList extends ProductsList {
     /**
      * @constructor
      * 
-     * @param {object} {inetShopProductsList} - Список товаров в интернет магазине
-     * @param {string} {querySelectorName} - Наименование HTML-блока для вывода
+     * @param inetShopProductsList {object} - Список товаров в интернет магазине
+     * @param querySelectorName    {string} - Наименование HTML-блока для вывода
+     * 
     */
     constructor(inetShopProductsList, querySelectorName) {
         super()
@@ -442,8 +451,9 @@ class Basket {
     /**
      * @constructor
      * 
-     * @param {object} {basketProductsList} - Список товаров в корзине
-     * @param {string} {querySelectorName} - Наименование HTML-блока
+     * @param basketProductsList {object} - Список товаров в корзине
+     * @param querySelectorName  {string} - Наименование HTML-блока
+     * 
     */
     constructor(basketProductsList, querySelectorName) {
 
@@ -531,8 +541,8 @@ class BtnBasketAbstract {
     /**
      * @constructor
      * 
-     * @param basketProductsList   {object} - Список товаров в корзине пользователя
-     * @param basket               {object} - Корзина пользователя
+     * @param basketProductsList {object} - Список товаров в корзине пользователя
+     * @param basket             {object} - Корзина пользователя
      * 
      */
     constructor(basketProductsList, basket) {
@@ -645,7 +655,8 @@ class BtnDeleteAllProducts extends BtnBasketAbstract {
      * @constructor
      * 
      * @param basketProductsList {object} - Список товаров в корзине
-     * @param basket {object} - Корзина пользователя
+     * @param basket             {object} - Корзина пользователя
+     * 
      */
     constructor(basketProductsList, basket) {
 
@@ -678,9 +689,10 @@ class BtnDeleteProductElement extends BtnBasketAbstract {
     /**
      * @constructor
      * 
-     * @param id {number} - ИД товара
+     * @param id                 {number} - ИД товара
      * @param basketProductsList {object} - Список товаров в корзине
-     * @param basket {object} - Корзина пользователя
+     * @param basket             {object} - Корзина пользователя
+     * 
     */
     constructor(id, basketProductsList, basket) {
        
@@ -721,9 +733,10 @@ class BtnDeleteProduct extends BtnBasketAbstract {
     /**
      * @constructor
      * 
-     * @param id {number} - ИД товара
+     * @param id                 {number} - ИД товара
      * @param basketProductsList {object} - Список товаров в корзине
-     * @param basket {object} - Корзина пользователя
+     * @param basket             {object} - Корзина пользователя
+     * 
     */
     constructor(id, basketProductsList, basket) {
         
