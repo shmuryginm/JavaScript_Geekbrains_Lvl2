@@ -49,7 +49,9 @@ const server = http.createServer((req, res) => {
         if (ex.code === 'ENOENT') {
             console.log(`Ошибка! Файл ${url} не найден!`)
         } else {
-            // TODO Ревлизовать передачу браузеру кода состояния HTTP
+
+            // TODO: Ревлизовать передачу браузеру кода состояния HTTP
+            
             console.log(`Ошибка! ${ex.name} ${ex.message}!`)
         }
     }
@@ -67,4 +69,4 @@ const port = process.env.PORT || DEFAULT_HTTP_PORT_NUMBER
 //Указываем веб-серверу, через какой порт работать с браузером
 server.listen(port)
 
-console.log(`Server started on port ${port} !`)
+console.log(`Server started on port ${port}!`)
