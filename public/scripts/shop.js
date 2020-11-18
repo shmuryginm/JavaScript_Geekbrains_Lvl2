@@ -109,11 +109,6 @@ class ProductsList {
     Items = []
 
     /**
-     * @constructor 
-    */
-    constructor() { }
-
-    /**
      * Метод возвращает индекс в массиве товаров по ИД товара
      * 
      * @param id {number} Идентификатор товара
@@ -139,12 +134,6 @@ class ProductsList {
         //Товар не найден по ИД
         return -1
     }
-
-
-    /**
-     * Метод отображает товары 
-    */
-    render() { }
 }
 
 
@@ -176,6 +165,7 @@ class InetShopProductsList extends ProductsList {
      * 
      */
     constructor(chunkSize, querySelectorName) {
+        
         super()
 
         this._querySelectorName = querySelectorName
@@ -463,13 +453,13 @@ class BasketProductsList extends ProductsList {
 
         let s = ""
 
-        for (let i = 0; i < this.Items.length; i++) {
-           let part = `<p>${this.Items[i].Name}, цена: ${this.Items[i].Price}, кол-во: ${this.Items[i].Count}`
-                + ` <button type = "button" name="btnDeleteElement_${this.Items[i].ID}" value="${this.Items[i].ID}">-</button>`
-                + ` <button type = "button" name="btnDeleteProduct_${this.Items[i].ID}" value="${this.Items[i].ID}">:-(</button></p><br>`
+        this.Items.forEach( (item) => {
+            let part = `<p>${item.Name}, цена: ${item.Price}, кол-во: ${item.Count}`
+                + ` <button type = "button" name="btnDeleteElement_${item.ID}" value="${item.ID}">-</button>`
+                + ` <button type = "button" name="btnDeleteProduct_${item.ID}" value="${item.ID}">:-(</button></p><br>`
 
-            s = s + part    
-        }
+            s = s + part
+        })
 
         return s
     }
@@ -570,10 +560,10 @@ class Basket {
             return
         }
 
-        for (let i = 0; i < this._basketProductsList.Items.length; i++) {
-            this._countTotal += this._basketProductsList.Items[i].Count 
-            this._sumTotal += this._basketProductsList.Items[i].Price * this._basketProductsList.Items[i].Count
-        }
+       this._basketProductsList.Items.forEach((item) => {
+            this._countTotal += item.Count 
+            this._sumTotal += item.Price * item.Count
+        })
     }
     
 
@@ -610,9 +600,9 @@ class Basket {
 
 
 /**
- * Класс представляет собой абстрактную кнопку, реализующую работу с корзиной
+ * Класс представляет собой кнопку, реализующую работу с корзиной
  */
-class BtnBasketAbstract {
+class BtnBasket {
     
     /**
      * Список товаров в корзине */
@@ -630,6 +620,7 @@ class BtnBasketAbstract {
      * 
      */
     constructor(basketProductsList, basket) {
+
         this._basketProductsList = basketProductsList
         this._basket = basket
     }
@@ -648,14 +639,8 @@ class BtnBasketAbstract {
         return this._basket
     }
 
-
     /**
-     * Метод имитирует отображение кнопки
-     */
-    render() { }
-
-    /**
-     * Метод имитирует нажатие кнопки "Добавить товар в корзину"
+     * Метод реализует нажатие кнопки "Добавить товар в корзину"
     */
     click() {
 
@@ -668,7 +653,7 @@ class BtnBasketAbstract {
 /**
  * Класс реализует кнопку "Добавить товар в корзину"
  */
-class BtnAddProductInBasket extends BtnBasketAbstract {
+class BtnAddProductInBasket extends BtnBasket {
 
     /**
      * ИД товара */
@@ -723,11 +708,6 @@ class BtnAddProductInBasket extends BtnBasketAbstract {
         return this._index
     }
 
-
-    render() {
-
-    } 
-
     /**
      * Метод релизует нажатие кнопки "Добавить товар в корзину"
     */
@@ -742,7 +722,7 @@ class BtnAddProductInBasket extends BtnBasketAbstract {
 /**
  * Класс реализует кнопку "Удалить все товары из корзины"
  */
-class BtnDeleteAllProducts extends BtnBasketAbstract {
+class BtnDeleteAllProducts extends BtnBasket {
 
     /**
      * @constructor
@@ -755,12 +735,6 @@ class BtnDeleteAllProducts extends BtnBasketAbstract {
 
         super(basketProductsList, basket)
     }
-
-
-    render() {
-
-    }
-
 
     /**
      * Метод реализует нажатие кнопки "Удалить все товары из корзины" 
@@ -777,7 +751,7 @@ class BtnDeleteAllProducts extends BtnBasketAbstract {
 /**
  * Класс реализует конпку "Удалить элемент товара из корзины"
  */
-class BtnDeleteProductElement extends BtnBasketAbstract {
+class BtnDeleteProductElement extends BtnBasket {
 
     /**
      * ИД товара */
@@ -805,11 +779,6 @@ class BtnDeleteProductElement extends BtnBasketAbstract {
     }
 
 
-    render() {
-
-    }
-
-
     /**
      * Метод реализует нажатие кнопки "Удалить элемент товара из корзины" 
     */
@@ -824,7 +793,7 @@ class BtnDeleteProductElement extends BtnBasketAbstract {
 /**
  * Класс реализует конпку "Удалить товар из корзины"
  */
-class BtnDeleteProduct extends BtnBasketAbstract {
+class BtnDeleteProduct extends BtnBasket {
 
     /**
      * ИД товара */
@@ -852,12 +821,6 @@ class BtnDeleteProduct extends BtnBasketAbstract {
     get ID() {
         return this._id
     }
-
-
-    render() {
-
-    }
-    
 
     /**
      * Метод реализует нажатие кнопки "Удалить товар из корзины" 
@@ -1051,10 +1014,10 @@ class Program {
     */
     static _setHandlersForBasketButtons() {
 
-        for (let i = 0; i < this.basketProductsList.Items.length; i++) {
+        this.basketProductsList.Items.forEach((item) => {
             //Получаем ИД товара
-            let productID = this.basketProductsList.Items[i].ID    
-
+            let productID = item.ID    
+        
             //Определим действия на нажатие кнопки "Удалить товар из группы товаров"
             let btn = document.getElementsByName(this._btnDeleteProductElementName + "_" + productID)[0]
 
@@ -1068,7 +1031,7 @@ class Program {
             if (btn != null) {
                 btn.addEventListener("click", () => {this.OnBtnDeleteProductClick(btn.value)})
             }
-        }
+        })
     }
 
 
