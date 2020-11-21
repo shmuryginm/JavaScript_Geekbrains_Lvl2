@@ -47,9 +47,7 @@ class DataValidator {
 
         this._phoneNumberValidator = /^\+7\([0-9]{3}\)[0-9]{3}-[0-9]{4}$/g
 
-        //Прекратите проверять Email с помощью регулярных выражений!
-        //https://habr.com/ru/post/175375/
-        this._emailAddressValidator = /^([A-Za-z0-9_\.-]+)@([A-Za-z0-9_\.-]+)\.([a-z\.]{2,6})$/g
+        this._emailAddressValidator = /^([\w\.-]+)@([\w\.-]+)\.([A-Za-z\.]{2,6})$/
 
         this._russianNameValidator = /^[А-Я][а-яё]+$/gu
     }
@@ -147,21 +145,28 @@ class DataValidatorTest {
         console.log(BREAK_LINE)
         console.log("Тестируем правильность адреса электронной почты")
 
-        let emailAddress = "shmuryginm@mail.ru"
+        let emailAddress = "mymail@mail.ru"
         expected = true
         actual = dataValidator.validEmailAddress(emailAddress)
         testResult = (expected === actual)
         console.log(`e-mail address: ${emailAddress}, expected: ${expected}, actual: ${actual}`)
         testResult ? console.log("Тест пройден") : console.error("Тест НЕ пройден!")
 
-        emailAddress = "shmuryginm2mail.ru"
+        emailAddress = "mymail2mail.ru"
         expected = false
         actual = dataValidator.validEmailAddress(emailAddress)
         testResult = (expected === actual)
         console.log(`e-mail address: ${emailAddress}, expected: ${expected}, actual: ${actual}`)
         testResult ? console.log("Тест пройден") : console.error("Тест НЕ пройден!")
 
-        emailAddress = "_Vasily.Pupkin@gmail.com"
+        emailAddress = "my.mail@mail.ru"
+        expected = true
+        actual = dataValidator.validEmailAddress(emailAddress)
+        testResult = (expected === actual)
+        console.log(`e-mail address: ${emailAddress}, expected: ${expected}, actual: ${actual}`)
+        testResult ? console.log("Тест пройден") : console.error("Тест НЕ пройден!")
+
+        emailAddress = "my-mail@mail.ru"
         expected = true
         actual = dataValidator.validEmailAddress(emailAddress)
         testResult = (expected === actual)
@@ -218,4 +223,4 @@ class DataValidatorTest {
 }
 
 
-DataValidatorTest.runTests()
+//DataValidatorTest.runTests()
