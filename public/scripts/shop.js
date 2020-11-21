@@ -325,7 +325,7 @@ class InetShopProductsList extends ProductsList {
         for (let i = 0; i < this.CurrentItems; i++) {
             let part = 
                 `<p>${this.Items[i].Name}, цена: ${this.Items[i].Price}` + 
-                ` <button type = "button" name="btnProductList_${this.Items[i].ID}" value="${this.Items[i].ID}">+</button></p><br>`
+                ` <button type="button" name="btnProductList_${this.Items[i].ID}" value="${this.Items[i].ID}">+</button></p><br>`
 
             s = s + part    
         }

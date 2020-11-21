@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обратная связь</title>
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
+</head>
+<body>
+    <header>
+        <h2>Обратная связь</h2>
+    </header>
+
+    <main>
+        <form name="feedback">
+            <p>Имя (с прописной бкувы): <input type="text" name="userName"></p>
+            <br>
+            <p>e-mail (например, mymail@mail.ru):<input type="text" name="userEMail"></p>
+            <br>
+            <p>Номер телефона (+7(000)000-0000):<input type="text" name="userPhoneNumber"></p>
+        </form>
+
+        <br>
+        <br>
+
+        <button name="btnValidate" onclick="checkInputInfo()">Проверить данные</button>
+
+        <br>
+        <br>
+        <a href="../index.html">На главную</a>
+    </main>
+
+    <footer>
+
+    </footer>
+
+    <script src="../scripts/inputValidator.js"></script>
+
+    <script type="text/javascript">
+        function checkInputInfo() {
+
+            const validator = new DataValidator()
+
+            let form = document.forms.feedback
+
+            //Получим содержимое поля Имя
+            let elem = form.elements.userName
+            //В поле отсутствуют данные?
+            if (elem.value === "") {
+                alert("Заполните поле \"Имя\"!")
+                return
+            }
+            //Проверим значение поля
+            let result = validator.validRussianName(elem.value)
+            if (!result) {
+                const message = `При заполнении поля "Имя" было задвно ошибочное значение: "${elem.value}"!`
+                console.warn(message)
+                alert(message)
+            }
+            else {
+                console.log(`Данные в поле "Имя" прошли проверку: "${elem.value}".`)
+            }
+
+            //Получим содержимое поля email
+            elem = form.elements.userEMail
+            //В поле отсутствуют данные?
+            if (elem.value === "") {
+                alert("Заполните поле \"e-mail\"!")
+                return
+            }
+            //Проверим значение поля
+            result = result && validator.validEmailAddress(elem.value)
+            if (!result) {
+                const message = `При заполнении поля "e-mail" было задвно ошибочное значение: "${elem.value}"!`
+                console.warn(message)
+                alert(message)
+            }
+            else {
+                console.log(`Данные в поле "e-mail" прошли проверку: "${elem.value}".`)
+            }
+
+            //Получим содержимое поля Номер телефона
+            elem = form.elements.userPhoneNumber
+            //В поле отсутствуют данные?
+            if (elem.value === "") {
+                alert("Заполните поле \"Номер телефона\"!")
+                return
+            }
+            //Проверим значение поля
+            result = result && validator.validPhoneNumber(elem.value)
+            if (!result) {
+                const message = `При заполнении поля "Номер телефона" было задвно ошибочное значение: "${elem.value}"!`
+                console.warn(message)
+                alert(message)
+            }
+            else {
+                console.log(`Данные в поле "Номер телефона" прошли проверку: "${elem.value}".`)
+            }
+
+            if (result) {
+                const message = "Проверка данных успешно завершена!"
+                console.warn(message)
+                alert(message)
+            }
+        }
+    </script>
+        
+</body>
+</html>
