@@ -2,6 +2,7 @@
  *  Файл представляет набор классов для описания работы интернет магазина
 */
 
+
 /**
  * Класс представляет товар в интернет магазине
 */
@@ -197,14 +198,34 @@ class InetShopProductsList extends ProductsList {
 
 
     /**
-     * Заглушка - имитатор запроса на сервер
-     * Возвращает массив свойств товаров интернет магазина
+     * Получаем данные о товарах с сервера
+     * 
+     * @returns {object} Массив товаров интернет магазина
      * 
     */ 
     _getProducts() {
+        
+        let tableNumber = 1
+        let tablePath = `${document.location.href}database/products${tableNumber}.json`
 
-        // TODO: Выполнить асинхронное получение данных из псевдо-БД и установить в заголовке @returns
+        const result = fetch(tablePath)
+            //Необходимо вернуть промис, так как далее асинхроность пойдёт по цепочке
+            return result
 
+            //Это ответ от сервера
+            .then(resp => {
+                //Это json, который мы "вытащили" из ответа сервера
+                return resp.json()
+            })
+            //а это уже необходимый нам масиив данных
+            .then(data => {
+                return data.products
+            })
+            .catch(err => {
+                console.error("Ошибка!", err)
+            })
+        
+        /*
         return [
             { id: 10,  name: "Shirt",     price:  1500 },
             { id: 20,  name: "Socks",     price:   100 },
@@ -217,6 +238,7 @@ class InetShopProductsList extends ProductsList {
             { id: 90,  name: "Backpack",  price:  9999 },
             { id: 100, name: "Crampon",   price: 11000 },
         ]
+        */
     }
 
 
@@ -226,18 +248,50 @@ class InetShopProductsList extends ProductsList {
     getProductsList() {
 
         //Забираем массив товаров, на основе которых будем создавать объекты товаров
-        let products = this._getProducts()
+        //let products = this._getProducts()
 
-        //Преобразуем массив свойств товаров в массив объектов
-        //Метод map() позволяет вызвать переданную функцию один раз для каждого элемента массива, 
-        //формируя новый массив из результатов вызова этой функции.
-        products = products.map(cur => {
-            return new InetShopProduct(cur.id, cur.name, cur.price)
+        /*
+        //принимаем промис
+        let productsPromise = this._getProducts()
+
+        productsPromise
+            .then((products) => {
+                //Преобразуем массив свойств товаров в массив объектов
+                //Метод map() позволяет вызвать переданную функцию один раз для каждого элемента массива, 
+                //формируя новый массив из результатов вызова этой функции.
+                products = products.map(cur => {
+                    return new InetShopProduct(cur.id, cur.name, cur.price)
+                })
+
+                // Создадим список товаров в интернет магазине
+                //spread-оператор ... позволяет взять значения из массива по отдельности
+                this.Items.push(...products)
+            })
+            .catch( () => {} )
+        */
+
+        return new Promise((resolve, reject) => {
+            //принимаем промис
+            let productsPromise = this._getProducts()
+
+            productsPromise
+                .then((products) => {
+                    //Преобразуем массив свойств товаров в массив объектов
+                    //Метод map() позволяет вызвать переданную функцию один раз для каждого элемента массива, 
+                    //формируя новый массив из результатов вызова этой функции.
+                    products = products.map(cur => {
+                        return new InetShopProduct(cur.id, cur.name, cur.price)
+                    })
+
+                    // Создадим список товаров в интернет магазине
+                    //spread-оператор ... позволяет взять значения из массива по отдельности
+                    this.Items.push(...products)
+
+                    resolve("OK")
+                })
+                
+                .catch( () => { reject("FAIL") })
         })
-
-        // Создадим список товаров в интернет магазине
-        //spread-оператор ... позволяет взять значения из массива по отдельности
-        this.Items.push(...products)
     }
 
 
@@ -876,6 +930,16 @@ class Program {
     //#endregion
 
 
+    static _render() {
+        
+        //Выведем список товаров интернет-магазина
+        this.interShopProductsList.render()
+
+        //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
+        this._setHandlerForProductsListButtons()
+    }
+
+
     /**
      * Метод создаёт объекты интернет-маазина
     */
@@ -883,9 +947,6 @@ class Program {
 
         //Создадим объект для хранения списка товаров интернет магазина
         this.interShopProductsList = new InetShopProductsList(2, "productsList")
-
-        //Получим список товаров интернет магазина
-        this.interShopProductsList.getProductsList()
 
         //Создадим объект для списка товаров в корзине
         this.basketProductsList = new BasketProductsList(this.interShopProductsList, "basketList")
@@ -1071,10 +1132,14 @@ class Program {
             this._prepareShopObjects()
 
             //Выведем список товаров интернет-магазина
-            this.interShopProductsList.render()
+            //this.interShopProductsList.render()
 
             //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
-            this._setHandlerForProductsListButtons()
+            //this._setHandlerForProductsListButtons()
+
+            //Получим список товаров интернет магазина
+            const promise = this.interShopProductsList.getProductsList()
+            promise.then(this._render())
 
             //Установим обработчик на кнопку "Добавить ещё"
             this._setHandlerForGetNextChunkProductsButtons()
@@ -1086,7 +1151,8 @@ class Program {
             this._setHandlerForDeleteAllProductsButtons()
         }
         catch (ex) {
-            console.log(`${ex.name} - ${ex.message}!`)
+            //console.error(`${ex.name} - ${ex.message}!`)
+            console.error(ex)
         }
     }
 }
