@@ -250,8 +250,7 @@ class InetShopProductsList extends ProductsList {
         //Забираем массив товаров, на основе которых будем создавать объекты товаров
         //let products = this._getProducts()
 
-        /*
-        //принимаем промис
+        //Принимаем промис
         let productsPromise = this._getProducts()
 
         productsPromise
@@ -268,30 +267,6 @@ class InetShopProductsList extends ProductsList {
                 this.Items.push(...products)
             })
             .catch( () => {} )
-        */
-
-        return new Promise((resolve, reject) => {
-            //принимаем промис
-            let productsPromise = this._getProducts()
-
-            productsPromise
-                .then((products) => {
-                    //Преобразуем массив свойств товаров в массив объектов
-                    //Метод map() позволяет вызвать переданную функцию один раз для каждого элемента массива, 
-                    //формируя новый массив из результатов вызова этой функции.
-                    products = products.map(cur => {
-                        return new InetShopProduct(cur.id, cur.name, cur.price)
-                    })
-
-                    // Создадим список товаров в интернет магазине
-                    //spread-оператор ... позволяет взять значения из массива по отдельности
-                    this.Items.push(...products)
-
-                    resolve("OK")
-                })
-                
-                .catch( () => { reject("FAIL") })
-        })
     }
 
 
@@ -1138,8 +1113,8 @@ class Program {
             //this._setHandlerForProductsListButtons()
 
             //Получим список товаров интернет магазина
-            const promise = this.interShopProductsList.getProductsList()
-            promise.then(this._render())
+            this.interShopProductsList.getProductsList()
+            this._render()
 
             //Установим обработчик на кнопку "Добавить ещё"
             this._setHandlerForGetNextChunkProductsButtons()
