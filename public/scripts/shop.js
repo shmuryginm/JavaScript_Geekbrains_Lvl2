@@ -205,7 +205,11 @@ class InetShopProductsList extends ProductsList {
     */ 
     _getProducts() {
         
-        let tableNumber = 1
+        const tableNumber = ""
+        //const tableNumber = this.CurrentItems / 2
+
+        console.log(tableNumber)
+
         let tablePath = `${document.location.href}database/products${tableNumber}.json`
 
         const result = fetch(tablePath)
@@ -246,9 +250,6 @@ class InetShopProductsList extends ProductsList {
      * Метод из массива свойств товаров получает массив объектов
     */
     getProductsList() {
-
-        //Забираем массив товаров, на основе которых будем создавать объекты товаров
-        //let products = this._getProducts()
 
         return new Promise((resolve, reject) => {
             //Принимаем промис
@@ -1094,11 +1095,15 @@ class Program {
 
         //Выведены не все товары?
         if (this.interShopProductsList.CurrentItems <= this.interShopProductsList.Items.length) {
-            //Выведем список товаров
-            this.interShopProductsList.render()
 
-            //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
-            this._setHandlerForProductsListButtons()
+            this.interShopProductsList.getProductsList()
+            .then( () => {
+                //Выведем список товаров
+                this.interShopProductsList.render()
+
+                //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
+                this._setHandlerForProductsListButtons()
+            })
         }
     }
 
