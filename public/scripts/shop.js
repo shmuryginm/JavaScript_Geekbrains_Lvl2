@@ -198,7 +198,7 @@ class InetShopProductsList extends ProductsList {
 
 
     /**
-     * Получаем данные о товарах с сервера
+     * Получаем данные о товарах с сервера (асинхронно!)
      * 
      * @returns {object} Массив товаров интернет магазина
      * 
@@ -250,10 +250,9 @@ class InetShopProductsList extends ProductsList {
         //Забираем массив товаров, на основе которых будем создавать объекты товаров
         //let products = this._getProducts()
 
-        //Принимаем промис
-        let productsPromise = this._getProducts()
-
-        productsPromise
+        return new Promise((resolve, reject) => {
+            //Принимаем промис
+            this._getProducts()
             .then((products) => {
                 //Преобразуем массив свойств товаров в массив объектов
                 //Метод map() позволяет вызвать переданную функцию один раз для каждого элемента массива, 
@@ -265,8 +264,13 @@ class InetShopProductsList extends ProductsList {
                 // Создадим список товаров в интернет магазине
                 //spread-оператор ... позволяет взять значения из массива по отдельности
                 this.Items.push(...products)
+
+                resolve()
             })
-            .catch( () => {} )
+            .catch( () => { 
+                reject(this._getProducts.reject())
+            })
+        })
     }
 
 
@@ -905,18 +909,8 @@ class Program {
     //#endregion
 
 
-    static _render() {
-        
-        //Выведем список товаров интернет-магазина
-        this.interShopProductsList.render()
-
-        //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
-        this._setHandlerForProductsListButtons()
-    }
-
-
     /**
-     * Метод создаёт объекты интернет-маазина
+     * Метод создаёт объекты интернет-магазина
     */
     static _prepareShopObjects() {
 
@@ -931,80 +925,163 @@ class Program {
     }
     
 
+    //#region AddProductToBasket
+
     /**
-     * Метод добавляет товар в корзину, в зависимости от того, какая была нажата кнопка в списке
+     * Метод добавляет товар в корзину
      * 
-     * @param value {string} Свойство "value" кнопки, которую нажали
+     * @param value {string} Свойство "value" кнопки, которую нажали - код товара
+     * 
+     */
+    static _addtoBasket(value) {
+
+        return new Promise((resolve, reject) => {
+            //Создадим объект для добавления товара в корзину
+            let btnAddProductInBasket = new BtnAddProductInBasket
+            (
+                value, this.interShopProductsList, this.basketProductsList, this.basket
+            )
+
+            //Добавим товар в корзину
+            btnAddProductInBasket.click()
+
+            resolve()
+        })
+    }
+
+
+    /**
+     * Метод реализует событие кнопки добавления товара в корзину
+     * 
+     * @param value {string} Свойство "value" кнопки, которую нажали - код товара
      * 
      */
     static OnBtnAddToBasketClick(value) {
         
-        //Создадим объект для добавления товара в корзину
-        let btnAddProductInBasket = new BtnAddProductInBasket
-        (
-            value, this.interShopProductsList, this.basketProductsList, this.basket
-        )
+        this._addtoBasket(value)
+        .then( () => {
+            //Установим обработчик события на кнопки списка товаров в корзине
+            this._setHandlersForBasketButtons()
+        })
+    }
 
-        //Добавим товар в корзину
-        btnAddProductInBasket.click();
+    //#endregion
 
-        //Установим обработчик события на кнопки списка товаров в корзине
-        this._setHandlersForBasketButtons()
+
+    //#region DeleteProductElement
+
+    /**
+     * Метод удаляет элемент товара из группы товаров (асихронный!)
+     * 
+     * @param value {string} Свойство "value" кнопки, которую нажали - код товара
+     */
+    static _deleteProductElement(value) {
+
+        return new Promise((resolve, reject) => {
+            //Создадим объект для удаления единицы товара из корзины
+            let btnDeleteProductElement = new BtnDeleteProductElement
+            (
+                value, this.basketProductsList, this.basket
+            )
+
+            btnDeleteProductElement.click()
+
+            resolve()
+        })
     }
 
 
     /**
-     * Метод удаляет элемент товара из группы товаров в корзине в зависимости от того, какая была нажата кнопка в списке
+     * Метод реализует событие кнопки "Удаление элемента товара из группы товаров"
      * 
-     * @param value {string} Свойство "value" кнопки, которую нажали
+     * @param value {string} Свойство "value" кнопки, которую нажали - код товара
      * 
      */
     static OnBtnDeleteProductElementClick(value) {
 
-        //Создадим объект для удаления единицы товара из корзины
-        let btnDeleteProductElement = new BtnDeleteProductElement
-        (
-            value, this.basketProductsList, this.basket
-        )
-
-        btnDeleteProductElement.click()
-
-        //Установим обработчик события на кнопки списка товаров в корзине
-        this._setHandlersForBasketButtons()
+        this._deleteProductElement(value)
+        .then( () => {
+            //Установим обработчик события на кнопки списка товаров в корзине
+            this._setHandlersForBasketButtons()
+        })
     }
 
+    //#endregion
+
+
+    //#region DeleteProducts
 
     /**
-     * Метод удаляет товар из корзины
+     * Метод удаляет товар из корзины (асинхронный!)
      * 
-     * @param value {string} - Свойство "value" кнопки, которую нажали - код товара
+     * @param value {string} Свойство "value" кнопки, которую нажали - код товара
+     * 
      */
-    static OnBtnDeleteProductClick(value) {
-
-        //Создадим объект для удаления единицы товара из корзины
-        let btnDeleteProduct = new BtnDeleteProduct
-        (
-            value, this.basketProductsList, this.basket
-        )
-
-        btnDeleteProduct.click()
+    static _deleteProduct(value) {
         
-        //Установим обработчик события на кнопки списка товаров в корзине
-        this._setHandlersForBasketButtons()
+        return new Promise((resolve, reject) => {
+            //Создадим объект для удаления единицы товара из корзины
+            let btnDeleteProduct = new BtnDeleteProduct
+            (
+                value, this.basketProductsList, this.basket
+            )
+
+            btnDeleteProduct.click()
+
+            resolve()
+        })
     }
+
 
     /**
-     * Метод удаляет все товары из корзины 
+     * Метод реализует событие кнопки "Удалить товар из корзины"
+     * 
+     * @param value {string} Свойство "value" кнопки, которую нажали - код товара
+     * 
     */
-    static OnBtnDeleteAllProducrs() {
-
-        //Создадим кнопку для добавления товара в корзину
-        const btnDeleteAllProducts = new BtnDeleteAllProducts(this.basketProductsList, this.basket)
-
-        btnDeleteAllProducts.click()
-
-        this.basket.render();
+    static OnBtnDeleteProductClick(value) {    
+        
+        this._deleteProduct(value)
+        .then( () => {
+            //Установим обработчик события на кнопки списка товаров в корзине
+            this._setHandlersForBasketButtons()
+        })
     }
+
+    //#endregion
+
+
+    //#region DeleteAllProducts
+
+    /**
+     * Метод удаляет все товары из корзины (асинхронный!)
+    */
+    static _deleteAllProducts() {
+
+        return new Promise((resolve, reject) => {
+
+            //Создадим кнопку для добавления товара в корзину
+            const btnDeleteAllProducts = new BtnDeleteAllProducts(this.basketProductsList, this.basket)
+
+            btnDeleteAllProducts.click()
+
+            resolve()
+        })        
+    }
+
+
+    /**
+     * Метод реализует событие кнопки "Удалить все товары из корзины"
+    */
+    static OnBtnDeleteAllProducts() {
+
+        this._deleteAllProducts()
+        .then( () => {
+            this.basket.render()
+        })
+    }
+
+    //#endregion
 
 
     /**
@@ -1050,9 +1127,9 @@ class Program {
     */
     static _setHandlersForBasketButtons() {
 
-        this.basketProductsList.Items.forEach((item) => {
+        this.basketProductsList.Items.forEach( (item) => {
             //Получаем ИД товара
-            let productID = item.ID    
+            let productID = item.ID
         
             //Определим действия на нажатие кнопки "Удалить товар из группы товаров"
             let btn = document.getElementsByName(this._btnDeleteProductElementName + "_" + productID)[0]
@@ -1079,7 +1156,7 @@ class Program {
         let btn = document.getElementsByName(this._btnDeleteAllProductsName)[0]
 
         if (btn != null) {
-            btn.addEventListener("click", () => {this.OnBtnDeleteAllProducrs()})
+            btn.addEventListener("click", () => {this.OnBtnDeleteAllProducts()})
         }
     }
 
@@ -1106,15 +1183,17 @@ class Program {
             //Подготовим к работе объекты интенет-магазина
             this._prepareShopObjects()
 
-            //Выведем список товаров интернет-магазина
-            //this.interShopProductsList.render()
-
-            //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
-            //this._setHandlerForProductsListButtons()
-
             //Получим список товаров интернет магазина
+            //Эта операция асинхронная, необходимо дождаться её завершения!
             this.interShopProductsList.getProductsList()
-            this._render()
+            .then ( () => { 
+                //Выведем список товаров интернет-магазина
+                this.interShopProductsList.render()
+        
+                //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
+                this._setHandlerForProductsListButtons() 
+            })
+            
 
             //Установим обработчик на кнопку "Добавить ещё"
             this._setHandlerForGetNextChunkProductsButtons()
