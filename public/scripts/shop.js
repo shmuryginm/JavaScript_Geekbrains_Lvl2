@@ -206,9 +206,9 @@ class InetShopProductsList extends ProductsList {
     _getProducts() {
         
         const tableNumber = ""
+        
         //const tableNumber = this.CurrentItems / 2
-
-        console.log(tableNumber)
+        //console.log(tableNumber)
 
         let tablePath = `${document.location.href}database/products${tableNumber}.json`
 
