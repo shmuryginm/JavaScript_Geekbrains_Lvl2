@@ -8,6 +8,8 @@ import BtnDeleteProductElement from "./BtnDeleteProductElement.js"
 import BtnDeleteProduct from "./BtnDeleteProduct.js"
 
 
+import "../styles/styles.css"
+
 /**
  * Основной модуль
 */
