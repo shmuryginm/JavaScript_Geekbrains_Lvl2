@@ -47,12 +47,12 @@ const server = http.createServer((req, res) => {
         //ENOENT == Error NO ENTry (Error NO ENTity)
         //https://stackoverflow.com/questions/19902828/why-does-enoent-mean-no-such-file-or-directory
         if (ex.code === 'ENOENT') {
-            console.log(`Ошибка! Файл ${url} не найден!`)
+            console.error(`Ошибка! Файл ${url} не найден!`)
         } else {
 
             // TODO: Ревлизовать передачу браузеру кода состояния HTTP
             
-            console.log(`Ошибка! ${ex.name} ${ex.message}!`)
+            console.error(`Ошибка! ${ex.name} ${ex.message}!`)
         }
     }
 
