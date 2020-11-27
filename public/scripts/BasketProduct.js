@@ -1,7 +1,7 @@
 /***
  * Класс представляет товар в корзине пользователя
 */
-class BasketProduct extends InetShopProduct {
+/*export default*/ class BasketProduct extends InetShopProduct {
     /**
      * Количество товара в корзине */
     _count

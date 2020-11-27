@@ -1,7 +1,9 @@
 /**
  * Класс представляет список товаров в корзине пользователя
 */
-class BasketProductsList extends ProductsList {
+import ProductsList from "./ProductsList.js"
+
+export default class BasketProductsList extends ProductsList {
 
     /**
      * Список товаров в интернет магазине */

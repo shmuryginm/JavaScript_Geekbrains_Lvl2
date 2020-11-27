@@ -1,7 +1,10 @@
 /** 
  * Класс представляет список товаров в интернет магазине 
 */
-class InetShopProductsList extends ProductsList {
+
+import ProductsList from "./ProductsList.js"
+
+export default class InetShopProductsList extends ProductsList {
 
     /**
       * Количество товаров для одной порции загрузки в список для вывода */

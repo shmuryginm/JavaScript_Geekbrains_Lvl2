@@ -1,7 +1,7 @@
 /**
  * Класс представляет товар в интернет магазине
 */
-class InetShopProduct {
+/*export default*/ class InetShopProduct {
     /**
      * Идентификатор товара */
     _id

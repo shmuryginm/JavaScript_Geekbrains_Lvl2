@@ -1,7 +1,9 @@
 /***
  * Класс представляет товар в корзине пользователя
 */
-class BasketProduct extends InetShopProduct {
+import InetShopProduct from "./InetShopProduct.js"
+
+export default class BasketProduct extends InetShopProduct {
     /**
      * Количество товара в корзине */
     _count

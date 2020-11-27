@@ -1,7 +1,7 @@
 /**
  * Класс представляет список товаров в корзине пользователя
 */
-class BasketProductsList extends ProductsList {
+/*export default*/ class BasketProductsList extends ProductsList {
 
     /**
      * Список товаров в интернет магазине */

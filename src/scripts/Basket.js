@@ -1,7 +1,7 @@
 /**
  * Класс представляет корзину интернет магазина
 */
-class Basket {
+export default class Basket {
     /**
      * Количество товаров в корзине */
     _countTotal = 0

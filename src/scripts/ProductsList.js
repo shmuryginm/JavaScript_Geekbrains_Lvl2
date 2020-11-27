@@ -1,7 +1,7 @@
 /**
  * Класс представляет абстрактный список товаров
 */
-class ProductsList {
+export default class ProductsList {
     /**
      * Массив свойств товаров */
     Items = []

@@ -1,3 +1,7 @@
+import InetShopProductsList from "./InetShopProductsList.js"
+import BasketProductsList from "./BasketProductsList.js"
+import Basket from "./Basket.js"
+
 /**
  * Класс представляет собой кнопку, реализующую работу с корзиной
  */

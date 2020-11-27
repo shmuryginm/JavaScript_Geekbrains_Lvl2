@@ -159,7 +159,7 @@ class PromiseTest {
 }
 
 
-PromiseTest.test()
+//PromiseTest.test()
 
 
 function testForEach() {
