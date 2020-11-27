@@ -327,7 +327,7 @@ class Program {
      * 
      */
     static OnBtnAddToBasketClick(value) {
-        
+
         this._addtoBasket(value)
         .then( () => {
             //Установим обработчик события на кнопки списка товаров в корзине
@@ -464,15 +464,11 @@ class Program {
 
         //Выведены не все товары?
         if (this.interShopProductsList.CurrentItems <= this.interShopProductsList.Items.length) {
+            //Выведем список товаров
+            this.interShopProductsList.render()
 
-            this.interShopProductsList.getProductsList()
-            .then( () => {
-                //Выведем список товаров
-                this.interShopProductsList.render()
-
-                //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
-                this._setHandlerForProductsListButtons()
-            })
+            //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
+            this._setHandlerForProductsListButtons()
         }
     }
 
@@ -491,6 +487,9 @@ class Program {
 
             if (btn != null) {
                 btn.addEventListener("click", () => {this.OnBtnAddToBasketClick(btn.value)})
+            }
+            else {
+                console.error("Нет конпки " + this._btnInetShopProductsName + "_" + productID)
             }
         }
     }
@@ -567,6 +566,7 @@ class Program {
                 //Определим реакцию на нажатие для каждой кнопки из списка товаров магазина
                 this._setHandlerForProductsListButtons() 
             })
+            .catch( (err) => {console.error("Основной модуль!", err) })
             
 
             //Установим обработчик на кнопку "Добавить ещё"

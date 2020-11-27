@@ -2,6 +2,7 @@
  * Класс представляет список товаров в интернет магазине 
 */
 
+import InetShopProduct from "./InetShopProduct.js"
 import ProductsList from "./ProductsList.js"
 
 export default class InetShopProductsList extends ProductsList {
@@ -88,8 +89,8 @@ export default class InetShopProductsList extends ProductsList {
             .then(data => {
                 return data.products
             })
-            .catch(err => {
-                console.error("Ошибка!", err)
+            .catch( () => {
+                reject(new Error("Ошибка при получении массива свойств товаров!"))
             })
         
         /*
@@ -114,10 +115,10 @@ export default class InetShopProductsList extends ProductsList {
     */
     getProductsList() {
 
-        return new Promise((resolve, reject) => {
+        return new Promise( (resolve, reject) => {
             //Принимаем промис
             this._getProducts()
-            .then((products) => {
+            .then( (products) => {
                 //Преобразуем массив свойств товаров в массив объектов
                 //Метод map() позволяет вызвать переданную функцию один раз для каждого элемента массива, 
                 //формируя новый массив из результатов вызова этой функции.
@@ -131,9 +132,8 @@ export default class InetShopProductsList extends ProductsList {
 
                 resolve()
             })
-            .catch( () => { 
-                reject(this._getProducts.reject())
-            })
+            .catch( () => { reject(new Error("Ошибка при обработке массива свойств товаров!")) }
+            )
         })
     }
 

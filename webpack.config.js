@@ -1,7 +1,7 @@
 const path = require("path")
 
 module.exports = {
-    entry: "./src/shop.js",
+    entry: "./src/scripts/Shop.js",
     output: {
         path: path.resolve(__dirname, "./public/scripts"),
         filename: "shoppack.js"
