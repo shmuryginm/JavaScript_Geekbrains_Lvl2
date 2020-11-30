@@ -13,7 +13,7 @@
                     :id="product.id"
                     :name="product.name"
                     :price="product.price"
-            />
+            />            
         </div>
 
         <!--
@@ -38,15 +38,15 @@
         <div>
             <h3 :class="[$style.h3]">КОРЗИНА</h3>
             <Basket
-                :countTotal="0"
-                :priceTotal="0"
+                :countTotal = 0
+                :priceTotal = 0
             />
         </div>
 
-        <!--
-        <br>
-        <button name="ClearBasket">Очистить корзину</button>
-        -->
+        <div>
+            <BtnClearBasket
+            />
+        </div>
     </div>
 
 </template>
@@ -54,27 +54,29 @@
 
 <script>
 import Basket from './Basket.vue'
-    import Product from './Product.vue'
+import Product from './Product.vue'
+import BtnClearBasket from "./BtnClearBasket.vue"
 
     export default {
         components: {
             Product,
-                Basket
+            Basket,
+            BtnClearBasket
         },
 
     data() {
         return {
             products: [
-                { id: 10,  name: "Shirt",     price:  1500 },
-                { id: 20,  name: "Socks",     price:   100 },
-                { id: 30,  name: "Jacket",    price:  5000 },
-                { id: 40,  name: "Shoes",     price:  7000 },
-                { id: 50,  name: "Wooly hat", price:   700 },
-                { id: 60,  name: "Glows",     price:   650 },
-                { id: 70,  name: "Scarf",     price:   300 },
-                { id: 80,  name: "T-shirt",   price:  1200 },
-                { id: 90,  name: "Backpack",  price:  9999 },
-                { id: 100, name: "Crampon",   price: 11000 }
+                { id: 10,  name: "Shirt",     price:  1500, description: "", pathToImage: "" },
+                { id: 20,  name: "Socks",     price:   100, description: "", pathToImage: "" },
+                { id: 30,  name: "Jacket",    price:  5000, description: "", pathToImage: "" },
+                { id: 40,  name: "Shoes",     price:  7000, description: "", pathToImage: "" },
+                { id: 50,  name: "Wooly hat", price:   700, description: "", pathToImage: "" },
+                { id: 60,  name: "Glows",     price:   650, description: "", pathToImage: "" },
+                { id: 70,  name: "Scarf",     price:   300, description: "", pathToImage: "" },
+                { id: 80,  name: "T-shirt",   price:  1200, description: "", pathToImage: "" },
+                { id: 90,  name: "Backpack",  price:  9999, description: "", pathToImage: "" },
+                { id: 100, name: "Crampon",   price: 11000, description: "", pathToImage: "" }
             ]
         }
     }

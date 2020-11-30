@@ -11,7 +11,9 @@ export default {
         id: Number,
         name: String,
         price: Number,
-        count: Number
+        count: Number,
+        description: String,
+        pathToImage: String
     }
 }
 </script>

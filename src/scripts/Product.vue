@@ -10,7 +10,9 @@ export default {
     props: {
         id: Number,
         name: String,
-        price: Number
+        price: Number,
+        description: String,
+        pathToImage: String
     }
 }
 </script>
