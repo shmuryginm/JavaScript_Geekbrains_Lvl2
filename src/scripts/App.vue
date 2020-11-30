@@ -5,8 +5,8 @@
         </header>
 
         <div>
-            <h3>ТОВАРЫ МАГАЗИНА</h3>
-            <Item 
+            <h3 :class="[$style.h3]">ТОВАРЫ МАГАЗИНА</h3>
+            <Product
                 v-for="(product, index) in products"
                     :key="index"
 
@@ -16,23 +16,34 @@
             />
         </div>
 
-        <!--    
-        <div class="productsList"></div>
-
+        <!--
         <br>
         <button type="button" name="btnAddNextChunk">Добавить ещё</button>
         <br>
+        -->
 
-        <br>
-        <p><b>ТОВАРЫ В КОРЗИНЕ</b></p>
-        <br>
-        <div class="basketList"></div>
+        <div>
+            <h3 :class="[$style.h3]">ТОВАРЫ В КОРЗИНЕ</h3>
+            <BasketProduct 
+                v-for="(product, index) in basketProducts"
+                    :key="index"
 
-        <br>
-        <p><b>КОРЗИНА</b></p>
-        <br>
-        <div class="basket"></div>
+                    :id="basketProducts.id"
+                    :name="basketProducts.name"
+                    :price="basketProducts.price"
+                    :count="basketProducts.count"
+            />
+        </div>
 
+        <div>
+            <h3 :class="[$style.h3]">КОРЗИНА</h3>
+            <Basket
+                :countTotal="0"
+                :priceTotal="0"
+            />
+        </div>
+
+        <!--
         <br>
         <button name="ClearBasket">Очистить корзину</button>
         -->
@@ -42,11 +53,13 @@
 
 
 <script>
-    import Item from './Item.vue'
+import Basket from './Basket.vue'
+    import Product from './Product.vue'
 
     export default {
         components: {
-            Item
+            Product,
+                Basket
         },
 
     data() {
@@ -71,7 +84,11 @@
 
 <style module>
 .header {
+    font-family:Courier, Courier New, Andele Mono;
     color: white;
     background: yellowgreen;
+}
+.h3 {
+    font-family:Courier, Courier New, Andele Mono;
 }
 </style>
