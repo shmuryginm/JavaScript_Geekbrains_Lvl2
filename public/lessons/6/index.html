@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+
+<body>
+    <main>
+        <h1 @click="onMessageClick()">
+            <template>{{ message }}</template>
+        </h1>
+        
+        {{ counter }}
+
+        <input type="text" v-model="name"/>
+        <h1>MyName is {{ name }}</h1>
+    </main>
+
+    <script>
+        new Vue({
+            el: "main",
+            data: {
+                message: "Hello world!",
+                one: 1,
+                variable: 2,
+                counter: 0,
+                name: ''
+            },
+            methods: {
+                onMessageClick() {
+                    alert(this.getcomputedDate)
+                    
+                    this.counter++
+                }
+            },
+            computed: {
+                getcomputedDate() {
+                    console.log(`CALLED ${this.counter} times`)
+
+                    return new Date().getSeconds()
+                }
+            },
+            mounted() {
+                console.log(this.message)
+            }
+        })
+    </script>
+</body>
+</html>
